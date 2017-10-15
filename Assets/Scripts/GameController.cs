@@ -1,44 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class GameController : MonoBehaviour
 {
+    public static GameController Instance { get { return instance; } }
+    private static GameController instance = null;
+
     public GameObject selectionMarkerPrefab;
     public Grid grid;
 
-    private Transform selectionMarker;
+    private GameController() { }
 
-    private void Start()
+    private void Awake()
     {
+        if (instance == null)
+            instance = this;
+        else if (instance != this)
+            DestroyImmediate(gameObject);
+
         if (!grid)
             grid = FindObjectOfType<Grid>();
 
-        if (!selectionMarkerPrefab)
+        if (selectionMarkerPrefab)
         {
-            Debug.LogError("Selection marker missing!");
-            Debug.Break();
+            Instantiate(selectionMarkerPrefab);
         }
         else
-        {
-            Vector3 cellPos = grid.CellToWorld(Vector3Int.zero);
-            selectionMarker = Instantiate(selectionMarkerPrefab, cellPos, Quaternion.Euler(Vector3.zero)).transform;
-        }
-    }
-
-    private void Update()
-    {
-        MoveSelection();
-    }
-
-    private void MoveSelection()
-    {
-        if (!selectionMarker)
-            return;
-        
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int intMousePos = new Vector3Int(Mathf.FloorToInt(mousePos.x), Mathf.FloorToInt(mousePos.y), Mathf.FloorToInt(mousePos.z));
-        Vector3 cellPos = grid.CellToWorld(intMousePos);
-        selectionMarker.position = cellPos;
+            Debug.LogError("Selection marker prefab missing!");
     }
 }
