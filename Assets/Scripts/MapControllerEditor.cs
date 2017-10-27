@@ -91,10 +91,11 @@ public class MapControllerEditor : Editor
         else
         {
             // instantiate field prefab if not null
-            field = Instantiate(defField, Vector3.zero, Quaternion.Euler(Vector3.zero), parent);
+            field = Instantiate(defField, Vector3.zero, Quaternion.Euler(new Vector3(90, 0, 0)), parent);
             field.name = name;
         }
         field.transform.localPosition = pos;
+        field.transform.localEulerAngles = new Vector3(90, 0, 0);
 
         return field;
     }
@@ -107,17 +108,14 @@ public class MapControllerEditor : Editor
             if (!EditorUtility.DisplayDialog("Overwrite?", "Map is not empty. Overwrite existing?", "Yes", "No"))
                 return;
             else
-                for (int i = controller.transform.childCount - 1; i >= 0; i--)
-                {
-                    DestroyImmediate(controller.transform.GetChild(i).gameObject);
-                }
+                DestroyMap();
         }
 
         // generate new map
         GameObject row;
         for (int y = 0; y < height; y++)
         {
-            row = NewRow("Row" + y, controller.transform, new Vector3(0, y, 0));
+            row = NewRow("Row" + y, controller.transform, new Vector3(0, 0, y));
             for (int x = 0; x < width; x++)
             {
                 NewField("Field" + x, row.transform, new Vector3(x, 0, 0));
@@ -140,7 +138,7 @@ public class MapControllerEditor : Editor
         Transform lastRow = controller.transform.GetChild(rows - 1);
         int fields = lastRow.childCount;
 
-        GameObject newRow = NewRow("Row" + rows, controller.transform, new Vector3(0, lastRow.position.y + 1, 0));
+        GameObject newRow = NewRow("Row" + rows, controller.transform, new Vector3(0, 0, lastRow.position.z + 1));
         for (int i = 0; i < fields; i++)
         {
             NewField("Field" + i, newRow.transform, new Vector3(i, 0, 0));
@@ -183,10 +181,18 @@ public class MapControllerEditor : Editor
         {
             if (child.childCount <= 1)
             {
-                RemoveRow();
+                DestroyMap();
                 return;
             }
             DestroyImmediate(child.GetChild(child.childCount - 1).gameObject);
+        }
+    }
+
+    private void DestroyMap()
+    {
+        for (int i = controller.transform.childCount - 1; i >= 0; i--)
+        {
+            DestroyImmediate(controller.transform.GetChild(i).gameObject);
         }
     }
 
