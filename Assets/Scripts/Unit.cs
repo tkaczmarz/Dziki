@@ -9,6 +9,7 @@ public class Unit : MonoBehaviour
 	public TerrainType[] walkableTerrains;
 
 	private int walkableMask = 0;
+	private bool isMoving = false;
 
 	private void Awake() 
 	{		
@@ -42,19 +43,33 @@ public class Unit : MonoBehaviour
 	// calculates path to target location
 	public void GoTo(int x, int y)
 	{
+		if (isMoving)
+			return;
+
 		Vector3 targetPos = new Vector3(x, 0, y);
 		NavMeshPath path = new NavMeshPath();
 		NavMesh.CalculatePath(transform.position, targetPos, walkableMask, path);
-		StopAllCoroutines();
 		StartCoroutine(Move(path));
 	}
 
 	// moves unit through given path
 	private IEnumerator Move(NavMeshPath path)
 	{
+		isMoving = true;
+
+		// DEBUG: draw path corners
+		for (int i = 0; i < path.corners.Length; i++)
+		{
+			Vector3 corner = path.corners[i];
+			if (i > 0)
+			{
+				Debug.DrawLine(path.corners[i - 1], corner, Color.red, 3);
+			}
+		}
+		
 		foreach (Vector3 corner in path.corners)
 		{
-			while (Vector3.Distance(transform.position, corner) > 0.05f)
+			while (Vector3.Distance(transform.position, corner) > 0.01f)
 			{
 				transform.position = Vector3.MoveTowards(transform.position, corner, Time.deltaTime * moveSpeed);
 				yield return null;
@@ -62,5 +77,7 @@ public class Unit : MonoBehaviour
 
 			transform.position = corner;
 		}
+
+		isMoving = false;
 	}
 }
