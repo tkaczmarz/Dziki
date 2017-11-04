@@ -17,14 +17,16 @@ public class Field : MonoBehaviour
 		get { return unit; } 
 		set 
 		{
-			if (value == null)
+			if (value == null && unit)
+			{
 				unit.transform.SetParent(null);
-			else
+			}
+			else if (value != null && unit)
 			{
 				value.transform.SetParent(transform);
 				value.transform.localPosition = Vector3.zero;
-				unit = value;
 			}
+			unit = value;
 		}
 	}
 

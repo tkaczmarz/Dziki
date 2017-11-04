@@ -36,9 +36,12 @@ public class MapController : MonoBehaviour
             {
                 if ((y + 1) < fields.Count)
                     CreateOffMeshLink(fields[y][x], fields[y + 1][x]);
-
+                if ((y - 1) >= 0)
+                    CreateOffMeshLink(fields[y][x], fields[y - 1][x]);
                 if ((x + 1) < fields[y].Count)
                     CreateOffMeshLink(fields[y][x], fields[y][x + 1]);
+                if ((x - 1) >= 0)
+                    CreateOffMeshLink(fields[y][x], fields[y][x - 1]);
             }
         }
     }
@@ -46,6 +49,7 @@ public class MapController : MonoBehaviour
     private void CreateOffMeshLink(Field from, Field to)
     {
         OffMeshLink link = from.gameObject.AddComponent<OffMeshLink>();
+        link.biDirectional = false;
         link.startTransform = from.transform;
         link.endTransform = to.transform;
         link.area = NavMesh.GetAreaFromName(to.terrain.ToString());

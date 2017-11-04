@@ -9,6 +9,9 @@ public class GameController : MonoBehaviour
 
     public GameObject selectionMarkerPrefab;
 
+    [HideInInspector]
+    public SelectionMarker marker;
+
     private GameController() { }
 
     private void Awake()
@@ -20,7 +23,7 @@ public class GameController : MonoBehaviour
 
         if (selectionMarkerPrefab)
         {
-            Instantiate(selectionMarkerPrefab);
+            marker = Instantiate(selectionMarkerPrefab).GetComponent<SelectionMarker>();
         }
         else
             Debug.LogError("Selection marker prefab missing!");

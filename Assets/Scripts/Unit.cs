@@ -42,8 +42,8 @@ public class Unit : MonoBehaviour
 	{
 		if (Input.GetMouseButtonDown(0))
 		{
-			Vector2Int mousePos = MapController.GetMousePos();
-			GoTo(mousePos.x, mousePos.y);
+			Vector3 markerPos = GameController.Instance.marker.transform.position;
+			GoTo((int)markerPos.x, (int)markerPos.z);
 		}
 	}
 
@@ -57,7 +57,9 @@ public class Unit : MonoBehaviour
 		Vector3 targetPos = new Vector3(x, 0, y);
 		NavMeshPath path = new NavMeshPath();
 		NavMesh.CalculatePath(transform.position, targetPos, walkableMask, path);
-		StartCoroutine(Move(path));
+
+		if (path.status == NavMeshPathStatus.PathComplete)
+			StartCoroutine(Move(path));
 	}
 
 	// moves unit through given path

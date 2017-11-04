@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class SelectionMarker : MonoBehaviour
 { 
-    public Unit selectedUnit = null;
+    public Unit SelectedUnit { get { return selectedUnit; } }
+
+    private Unit selectedUnit = null;
 
     private void Start()
     {
