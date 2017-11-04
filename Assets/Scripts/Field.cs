@@ -11,4 +11,22 @@ public enum TerrainType
 public class Field : MonoBehaviour 
 {
 	public TerrainType terrain = TerrainType.Plains;
+
+	public Unit Unit 
+	{ 
+		get { return unit; } 
+		set 
+		{
+			if (value == null)
+				unit.transform.SetParent(null);
+			else
+			{
+				value.transform.SetParent(transform);
+				value.transform.localPosition = Vector3.zero;
+				unit = value;
+			}
+		}
+	}
+
+	private Unit unit;
 }

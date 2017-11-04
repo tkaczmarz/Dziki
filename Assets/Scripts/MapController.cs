@@ -68,4 +68,48 @@ public class MapController : MonoBehaviour
 
         return fields[h][w];
     }
+
+    public Field GetFieldAt(Vector3 pos)
+    {
+        int w = Mathf.RoundToInt(pos.x);
+        int h = Mathf.RoundToInt(pos.z);
+        if (h >= fields.Count || h < 0)
+        {
+            Debug.LogWarning("Wrong field coordinates!");
+            return null;
+        }
+        else if (w >= fields[h].Count || w < 0)
+        {
+            Debug.LogWarning("Wrong field coordinates!");
+            return null;
+        }
+
+        return fields[h][w];
+    }
+
+    public static Vector2Int GetMousePos()
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        int x = Mathf.RoundToInt(mousePos.x);
+        int y = Mathf.RoundToInt(mousePos.z);
+
+        return new Vector2Int(x, y);
+    }
+
+    public static Vector3 GetMousePos3()
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        int x = Mathf.RoundToInt(mousePos.x);
+        int y = Mathf.RoundToInt(mousePos.z);
+
+        return new Vector3(x, 0, y);
+    }
+
+    public bool IsPointOnMap(int x, int y)
+    {
+        if (y >= 0 && y < fields.Count && x >= 0 && x < fields[0].Count)
+            return true;
+        else
+            return false;
+    }
 }

@@ -4,23 +4,44 @@ using UnityEngine;
 
 public class SelectionMarker : MonoBehaviour
 { 
+    public Unit selectedUnit = null;
+
     private void Start()
     {
-        transform.position = GameController.Instance.grid.CellToWorld(Vector3Int.zero);
+        transform.position = Vector3.zero;
     }
 
     private void Update()
     {
         MoveSelection();
+        if (Input.GetMouseButtonDown(0))
+        {
+            SelectObject();   
+        }
     }
 
     private void MoveSelection()
     {
-        Vector3 lastPos = transform.position;
+        Vector2Int mousePos = MapController.GetMousePos();
+        if (MapController.Instance.IsPointOnMap(mousePos.x, mousePos.y))
+        {
+            transform.position = MapController.GetMousePos3();
+        }
+    }
 
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int intMousePos = new Vector3Int(Mathf.FloorToInt(mousePos.x), Mathf.FloorToInt(mousePos.y), Mathf.FloorToInt(mousePos.z));
-        Vector3 cellPos = GameController.Instance.grid.CellToWorld(intMousePos);
-        transform.position = cellPos;
+    private void SelectObject()
+    {
+        Field field = MapController.Instance.GetFieldAt(transform.position);
+        if (field.Unit)
+        {
+            if (selectedUnit)
+            {
+                selectedUnit.Deselect();
+                selectedUnit = null;
+            }
+
+            selectedUnit = field.Unit;
+            selectedUnit.Select();
+        }
     }
 }

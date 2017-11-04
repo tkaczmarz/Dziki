@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class GameController : MonoBehaviour
 {
@@ -9,7 +8,6 @@ public class GameController : MonoBehaviour
     private static GameController instance = null;
 
     public GameObject selectionMarkerPrefab;
-    public Grid grid;
 
     private GameController() { }
 
@@ -19,9 +17,6 @@ public class GameController : MonoBehaviour
             instance = this;
         else if (instance != this)
             DestroyImmediate(gameObject);
-
-        if (!grid)
-            grid = FindObjectOfType<Grid>();
 
         if (selectionMarkerPrefab)
         {

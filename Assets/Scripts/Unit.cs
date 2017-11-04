@@ -10,6 +10,9 @@ public class Unit : MonoBehaviour
 
 	private int walkableMask = 0;
 	private bool isMoving = false;
+	private NavMeshObstacle obstacle;
+	private bool selected = false;
+	private Field field = null;
 
 	private void Awake() 
 	{		
@@ -27,25 +30,30 @@ public class Unit : MonoBehaviour
 		}
 		else
 			Debug.LogWarning("Can't place agent on a NavMesh!");
+
+		obstacle = GetComponent<NavMeshObstacle>();
+		obstacle.carving = true;
+
+		field = MapController.Instance.GetFieldAt(transform.position);
+		field.Unit = this;
 	}
 
 	private void Update() 
 	{
 		if (Input.GetMouseButtonDown(0))
 		{
-			Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			int x = Mathf.RoundToInt(mousePos.x);
-			int y = Mathf.RoundToInt(mousePos.z);
-			GoTo(x, y);
-		}	
+			Vector2Int mousePos = MapController.GetMousePos();
+			GoTo(mousePos.x, mousePos.y);
+		}
 	}
 
 	// calculates path to target location
 	public void GoTo(int x, int y)
 	{
-		if (isMoving)
+		if (isMoving || !selected)
 			return;
 
+		field.Unit = null;
 		Vector3 targetPos = new Vector3(x, 0, y);
 		NavMeshPath path = new NavMeshPath();
 		NavMesh.CalculatePath(transform.position, targetPos, walkableMask, path);
@@ -78,6 +86,22 @@ public class Unit : MonoBehaviour
 			transform.position = corner;
 		}
 
+		field = MapController.Instance.GetFieldAt(transform.position);
+		field.Unit = this;
 		isMoving = false;
+	}
+
+	public void Select()
+	{
+		selected = true;
+		obstacle.carving = false;
+		GetComponent<SpriteRenderer>().color = Color.yellow;
+	}
+
+	public void Deselect()
+	{
+		selected = false;
+		obstacle.carving = true;
+		GetComponent<SpriteRenderer>().color = Color.white;
 	}
 }
