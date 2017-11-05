@@ -5,8 +5,10 @@ using UnityEngine;
 public class SelectionMarker : MonoBehaviour
 { 
     public Unit SelectedUnit { get { return selectedUnit; } }
+    public bool PositionChanged { get { return positionChanged; } }
 
     private Unit selectedUnit = null;
+    private bool positionChanged = false;
 
     private void Start()
     {
@@ -15,6 +17,7 @@ public class SelectionMarker : MonoBehaviour
 
     private void Update()
     {
+        positionChanged = false;
         MoveSelection();
         if (Input.GetMouseButtonDown(0))
         {
@@ -27,7 +30,12 @@ public class SelectionMarker : MonoBehaviour
         Vector2Int mousePos = MapController.GetMousePos();
         if (MapController.Instance.IsPointOnMap(mousePos.x, mousePos.y))
         {
-            transform.position = MapController.GetMousePos3();
+            Vector3 newPos = MapController.GetMousePos3();
+            if (Vector3.Distance(transform.position, newPos) > 0.1f)
+            {
+                transform.position = newPos;
+                positionChanged = true;
+            }
         }
     }
 

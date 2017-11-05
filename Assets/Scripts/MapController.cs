@@ -9,6 +9,7 @@ public class MapController : MonoBehaviour
     private static MapController instance = null;
 
     private List<List<Field>> fields = new List<List<Field>>();
+    private LineRenderer lineRenderer;
 
     private void Awake() 
     {
@@ -44,6 +45,9 @@ public class MapController : MonoBehaviour
                     CreateOffMeshLink(fields[y][x], fields[y][x - 1]);
             }
         }
+
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.positionCount = 0;
     }
 
     private void CreateOffMeshLink(Field from, Field to)
@@ -53,24 +57,6 @@ public class MapController : MonoBehaviour
         link.startTransform = from.transform;
         link.endTransform = to.transform;
         link.area = NavMesh.GetAreaFromName(to.terrain.ToString());
-    }
-
-    public Field GetFieldAt(float x, float y)
-    {
-        int w = Mathf.RoundToInt(x);
-        int h = Mathf.RoundToInt(y);
-        if (h >= fields.Count || h < 0)
-        {
-            Debug.LogWarning("Wrong field coordinates!");
-            return null;
-        }
-        else if (w >= fields[h].Count || w < 0)
-        {
-            Debug.LogWarning("Wrong field coordinates!");
-            return null;
-        }
-
-        return fields[h][w];
     }
 
     public Field GetFieldAt(Vector3 pos)
@@ -115,5 +101,33 @@ public class MapController : MonoBehaviour
             return true;
         else
             return false;
+    }
+
+    public void DrawPath(NavMeshPath path)
+    {
+        if (path == null)
+        {
+            lineRenderer.positionCount = 0;
+        }
+        else if (path.corners.Length > 1)
+        {
+            List<Vector3> corners = new List<Vector3>();
+            corners.Add(path.corners[0]);
+            for (int i = 1; i < path.corners.Length; i++)
+            {
+                Vector3 a = path.corners[i - 1];
+                Vector3 b = path.corners[i];
+                if (Vector3.Distance(a, b) > 0.1f)
+                    corners.Add(b);
+            }
+
+            lineRenderer.positionCount = corners.Count;
+            lineRenderer.SetPositions(corners.ToArray());
+        }
+        else
+        {
+            lineRenderer.positionCount = path.corners.Length;
+            lineRenderer.SetPositions(path.corners);
+        }
     }
 }

@@ -15,7 +15,7 @@ public class Unit : MonoBehaviour
 	private Field field = null;
 
 	private void Awake() 
-	{		
+	{
 		foreach (TerrainType terrain in walkableTerrains)
 		{
 			walkableMask |= (1 << NavMesh.GetAreaFromName(terrain.ToString()));
@@ -45,6 +45,33 @@ public class Unit : MonoBehaviour
 			Vector3 markerPos = GameController.Instance.marker.transform.position;
 			GoTo((int)markerPos.x, (int)markerPos.z);
 		}
+		else if (Input.GetMouseButtonDown(1))
+		{
+			Deselect();
+		}
+
+		if (GameController.Instance.marker.PositionChanged)
+		{
+			if (selected && !isMoving)
+			{
+				Vector3 marker = GameController.Instance.marker.transform.position;
+				NavMeshPath path = CalculatePath((int)marker.x, (int)marker.z);
+				MapController.Instance.DrawPath(path);
+			}
+		}
+	}
+
+	private NavMeshPath CalculatePath(int x, int y)
+	{
+		NavMeshPath path = new NavMeshPath();
+		Vector3 destination = new Vector3(x, 0, y);
+		NavMesh.CalculatePath(transform.position, destination, walkableMask, path);
+		if (path.status == NavMeshPathStatus.PathComplete)
+		{
+			return path;
+		}
+		else
+			return null;
 	}
 
 	// calculates path to target location
@@ -53,13 +80,16 @@ public class Unit : MonoBehaviour
 		if (isMoving || !selected)
 			return;
 
-		field.Unit = null;
+		MapController.Instance.DrawPath(null);
 		Vector3 targetPos = new Vector3(x, 0, y);
 		NavMeshPath path = new NavMeshPath();
 		NavMesh.CalculatePath(transform.position, targetPos, walkableMask, path);
 
 		if (path.status == NavMeshPathStatus.PathComplete)
+		{
+			field.Unit = null;
 			StartCoroutine(Move(path));
+		}
 	}
 
 	// moves unit through given path
@@ -104,6 +134,7 @@ public class Unit : MonoBehaviour
 	{
 		selected = false;
 		obstacle.carving = true;
+		MapController.Instance.DrawPath(null);
 		GetComponent<SpriteRenderer>().color = Color.white;
 	}
 }

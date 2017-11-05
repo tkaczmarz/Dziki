@@ -21,7 +21,8 @@ public class Field : MonoBehaviour
 			{
 				unit.transform.SetParent(null);
 			}
-			else if (value != null && unit)
+			
+			if (value != null)
 			{
 				value.transform.SetParent(transform);
 				value.transform.localPosition = Vector3.zero;
