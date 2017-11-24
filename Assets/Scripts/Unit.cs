@@ -7,6 +7,7 @@ public class Unit : SelectableObject
 {
 	public float moveSpeed = 4;
 	public float maxDamage = 50;
+	public float attackRange = 1;
 
 	private bool isMoving = false;
 	private NavMeshObstacle obstacle;
@@ -26,15 +27,22 @@ public class Unit : SelectableObject
 	{
 		base.Update();
 
+		if (!selected)
+			return;
+
 		if (Input.GetMouseButtonDown(0))
 		{
+			SelectableObject pointedObject = GameController.Instance.marker.PointedObject;
+			if (pointedObject)
+				Attack(pointedObject);
+
 			Vector3 markerPos = GameController.Instance.marker.transform.position;
 			GoTo((int)markerPos.x, (int)markerPos.z);
 		}
 
 		if (GameController.Instance.marker.PositionChanged)
 		{
-			if (selected && !isMoving)
+			if (!isMoving)
 			{
 				Vector3 marker = GameController.Instance.marker.transform.position;
 				NavMeshPath path = CalculatePath((int)marker.x, (int)marker.z);
@@ -59,7 +67,7 @@ public class Unit : SelectableObject
 	// calculates path to target location
 	public void GoTo(int x, int y)
 	{
-		if (isMoving || !selected)
+		if (isMoving)
 			return;
 
 		MapController.Instance.DrawPath(null);
@@ -118,5 +126,18 @@ public class Unit : SelectableObject
 		obstacle.carving = true;
 		MapController.Instance.DrawPath(null);
 		GetComponent<SpriteRenderer>().color = Color.white;
+	}
+
+	public void Attack(SelectableObject target)
+	{
+		if (target == this)
+			return;
+
+		// can't attack if too far from target
+		if (Vector3.Distance(transform.position, target.transform.position) > attackRange)
+			return;
+
+		float dmg = (health / maxHealth) * maxDamage;
+		target.TakeDamage(dmg);
 	}
 }

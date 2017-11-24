@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class SelectionMarker : MonoBehaviour
 { 
-    public Unit SelectedUnit { get { return selectedUnit; } }
+    public SelectableObject SelectedObject { get { return selectedObject; } }
+    public SelectableObject PointedObject { get { return pointedObject; } }
     public bool PositionChanged { get { return positionChanged; } }
 
-    private Unit selectedUnit = null;
+    private SelectableObject selectedObject = null;
+    private SelectableObject pointedObject = null;
     private bool positionChanged = false;
 
     private void Start()
@@ -21,8 +23,11 @@ public class SelectionMarker : MonoBehaviour
         MoveSelection();
         if (Input.GetMouseButtonDown(0))
         {
-            SelectObject();   
+            if (selectedObject == null)
+                SelectObject();   
         }
+        else if (Input.GetMouseButtonDown(1))
+            DeselectObject();
     }
 
     private void MoveSelection()
@@ -35,6 +40,9 @@ public class SelectionMarker : MonoBehaviour
             {
                 transform.position = newPos;
                 positionChanged = true;
+
+                // set pointed object
+                pointedObject = MapController.Instance.GetFieldAt(transform.position).Unit;
             }
         }
     }
@@ -44,14 +52,22 @@ public class SelectionMarker : MonoBehaviour
         Field field = MapController.Instance.GetFieldAt(transform.position);
         if (field.Unit)
         {
-            if (selectedUnit)
+            if (selectedObject)
             {
-                selectedUnit.Deselect();
-                selectedUnit = null;
+                DeselectObject();
             }
 
-            selectedUnit = field.Unit;
-            selectedUnit.Select();
+            selectedObject = field.Unit;
+            selectedObject.Select();
+        }
+    }
+
+    private void DeselectObject()
+    {
+        if (selectedObject)
+        {
+            selectedObject.Deselect();
+            selectedObject = null;
         }
     }
 }

@@ -4,11 +4,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
 
+public enum Team 
+{
+	Local, Opponent1
+}
+
 public class SelectableObject : MonoBehaviour 
 {
 	public TerrainType[] availableTerrains = { TerrainType.Road, TerrainType.Forest, TerrainType.Plains };
 	public float maxHealth = 100;
 	public float health = 100;
+	public Team team = Team.Local;
 
 	protected bool selected = false;
 	protected Field field = null;
@@ -58,5 +64,15 @@ public class SelectableObject : MonoBehaviour
 	public virtual void Deselect()
 	{
 		selected = false;
+	}
+
+	public void TakeDamage(float amount)
+	{
+		health -= amount;
+		if (health < 0)
+			health = 0;
+
+		if (healthText)
+			healthText.text = health.ToString();
 	}
 }
