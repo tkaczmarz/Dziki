@@ -3,33 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Unit : MonoBehaviour 
+public class Unit : SelectableObject 
 {
 	public float moveSpeed = 4;
-	public TerrainType[] walkableTerrains;
+	public float maxDamage = 50;
 
-	private int walkableMask = 0;
 	private bool isMoving = false;
 	private NavMeshObstacle obstacle;
-	private bool selected = false;
-	private Field field = null;
 
-	private void Awake() 
+	protected override void Awake() 
 	{
-		foreach (TerrainType terrain in walkableTerrains)
-		{
-			walkableMask |= (1 << NavMesh.GetAreaFromName(terrain.ToString()));
-		}
-
-		// place agent on NavMesh
-		NavMeshHit navMeshHit = new NavMeshHit();
-		if (NavMesh.SamplePosition(transform.position, out navMeshHit, 5, walkableMask))
-		{
-			transform.position = navMeshHit.position;
-			transform.eulerAngles = new Vector3(90, 0, 0);
-		}
-		else
-			Debug.LogWarning("Can't place agent on a NavMesh!");
+		base.Awake();
 
 		obstacle = GetComponent<NavMeshObstacle>();
 		obstacle.carving = true;
@@ -38,16 +22,14 @@ public class Unit : MonoBehaviour
 		field.Unit = this;
 	}
 
-	private void Update() 
+	protected override void Update() 
 	{
+		base.Update();
+
 		if (Input.GetMouseButtonDown(0))
 		{
 			Vector3 markerPos = GameController.Instance.marker.transform.position;
 			GoTo((int)markerPos.x, (int)markerPos.z);
-		}
-		else if (Input.GetMouseButtonDown(1))
-		{
-			Deselect();
 		}
 
 		if (GameController.Instance.marker.PositionChanged)
@@ -65,7 +47,7 @@ public class Unit : MonoBehaviour
 	{
 		NavMeshPath path = new NavMeshPath();
 		Vector3 destination = new Vector3(x, 0, y);
-		NavMesh.CalculatePath(transform.position, destination, walkableMask, path);
+		NavMesh.CalculatePath(transform.position, destination, terrainMask, path);
 		if (path.status == NavMeshPathStatus.PathComplete)
 		{
 			return path;
@@ -83,7 +65,7 @@ public class Unit : MonoBehaviour
 		MapController.Instance.DrawPath(null);
 		Vector3 targetPos = new Vector3(x, 0, y);
 		NavMeshPath path = new NavMeshPath();
-		NavMesh.CalculatePath(transform.position, targetPos, walkableMask, path);
+		NavMesh.CalculatePath(transform.position, targetPos, terrainMask, path);
 
 		if (path.status == NavMeshPathStatus.PathComplete)
 		{
@@ -123,16 +105,16 @@ public class Unit : MonoBehaviour
 		isMoving = false;
 	}
 
-	public void Select()
+	public override void Select()
 	{
-		selected = true;
+		base.Select();
 		obstacle.carving = false;
 		GetComponent<SpriteRenderer>().color = Color.yellow;
 	}
 
-	public void Deselect()
+	public override void Deselect()
 	{
-		selected = false;
+		base.Deselect();
 		obstacle.carving = true;
 		MapController.Instance.DrawPath(null);
 		GetComponent<SpriteRenderer>().color = Color.white;
