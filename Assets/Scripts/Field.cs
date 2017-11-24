@@ -12,14 +12,19 @@ public class Field : MonoBehaviour
 {
 	public TerrainType terrain = TerrainType.Plains;
 
+	/// <summary>
+	/// First element is Unit and second element is Structure. Both may be null.
+	/// </summary>
+	private SelectableObject[] selectables = { null, null };
+
 	public Unit Unit 
 	{ 
-		get { return unit; } 
+		get { return selectables[0] as Unit; } 
 		set 
 		{
-			if (value == null && unit)
+			if (value == null && selectables[0])
 			{
-				unit.transform.SetParent(null);
+				selectables[0].transform.SetParent(null);
 			}
 			
 			if (value != null)
@@ -27,9 +32,40 @@ public class Field : MonoBehaviour
 				value.transform.SetParent(transform);
 				value.transform.localPosition = Vector3.zero;
 			}
-			unit = value;
+			selectables[0] = value;
+		}
+	}
+	
+	public Structure Structure
+	{
+		get { return selectables[1] as Structure; }
+		set
+		{
+			if (value == null && selectables[1])
+			{
+				selectables[1].transform.SetParent(null);
+			}
+
+			if (value != null)
+			{
+				value.transform.SetParent(transform);
+				value.transform.localPosition = Vector3.zero;
+			}
+			selectables[1] = value;
 		}
 	}
 
-	private Unit unit;
+	/// <summary>
+	/// Returns first selectable object, that is Unit if not null or Structure which may be null.
+	/// </summary>
+	public SelectableObject Selectable
+	{
+		get
+		{
+			if (selectables[0])
+				return selectables[0];
+			else
+				return selectables[1];
+		}
+	}
 }

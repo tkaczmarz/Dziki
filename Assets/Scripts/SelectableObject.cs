@@ -9,6 +9,7 @@ public enum Team
 	Local, Opponent1
 }
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class SelectableObject : MonoBehaviour 
 {
 	public TerrainType[] availableTerrains = { TerrainType.Road, TerrainType.Forest, TerrainType.Plains };
@@ -20,6 +21,7 @@ public class SelectableObject : MonoBehaviour
 	protected Field field = null;
 	protected int terrainMask = 0;
 	protected Text healthText;
+	protected SpriteRenderer spriteRenderer;
 
 	protected virtual void Awake() 
 	{
@@ -37,7 +39,7 @@ public class SelectableObject : MonoBehaviour
 			transform.eulerAngles = new Vector3(90, 0, 0);
 		}
 		else
-			Debug.LogWarning("Can't place object on a NavMesh!");
+			Debug.LogWarning("Can't place '" + name + "' (" + GetType() + ") object on a NavMesh!");
 
 		healthText = GetComponentInChildren<Text>();
 		if (healthText)
@@ -46,6 +48,8 @@ public class SelectableObject : MonoBehaviour
 				health = maxHealth;
 			healthText.text = health.ToString();
 		}
+
+		spriteRenderer = GetComponent<SpriteRenderer>();
 	}
 
 	protected virtual void Update() 
@@ -59,11 +63,13 @@ public class SelectableObject : MonoBehaviour
 	public virtual void Select()
 	{
 		selected = true;
+		spriteRenderer.color = Color.yellow;
 	}
 
 	public virtual void Deselect()
 	{
 		selected = false;
+		spriteRenderer.color = Color.white;
 	}
 
 	public void TakeDamage(float amount)

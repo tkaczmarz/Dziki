@@ -117,7 +117,6 @@ public class Unit : SelectableObject
 	{
 		base.Select();
 		obstacle.carving = false;
-		GetComponent<SpriteRenderer>().color = Color.yellow;
 	}
 
 	public override void Deselect()
@@ -125,7 +124,6 @@ public class Unit : SelectableObject
 		base.Deselect();
 		obstacle.carving = true;
 		MapController.Instance.DrawPath(null);
-		GetComponent<SpriteRenderer>().color = Color.white;
 	}
 
 	public void Attack(SelectableObject target)

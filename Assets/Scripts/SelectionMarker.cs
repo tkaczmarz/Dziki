@@ -50,14 +50,14 @@ public class SelectionMarker : MonoBehaviour
     private void SelectObject()
     {
         Field field = MapController.Instance.GetFieldAt(transform.position);
-        if (field.Unit)
+        if (field.Selectable)
         {
             if (selectedObject)
             {
                 DeselectObject();
             }
 
-            selectedObject = field.Unit;
+            selectedObject = field.Selectable;
             selectedObject.Select();
         }
     }
