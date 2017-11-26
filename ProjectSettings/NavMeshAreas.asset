@@ -12,13 +12,13 @@ NavMeshProjectSettings:
   - name: Jump
     cost: 2
   - name: Water
-    cost: 1
+    cost: 5
   - name: Mountains
-    cost: 4
-  - name: Forest
     cost: 3
-  - name: Plains
+  - name: Forest
     cost: 2
+  - name: Plains
+    cost: 1.5
   - name: Road
     cost: 1
   - name: 

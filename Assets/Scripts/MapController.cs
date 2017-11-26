@@ -12,6 +12,7 @@ public class MapController : MonoBehaviour
 
     private List<List<Field>> fields = new List<List<Field>>();
     private LineRenderer lineRenderer;
+    private float[] terrainCosts = { 5, 3, 2, 1.5f, 1 };
 
     private void Awake() 
     {
@@ -108,6 +109,7 @@ public class MapController : MonoBehaviour
             return false;
     }
 
+    #region Path methods
     public float PathLength(NavMeshPath path)
     {
         if (path == null)
@@ -124,13 +126,26 @@ public class MapController : MonoBehaviour
         return length;
     }
 
-    public void DrawPath(NavMeshPath path)
+    public float PathCost(NavMeshPath path)
     {
         if (path == null)
+            return 0;
+
+        float cost = 0;
+        List<Vector3> corners = new List<Vector3>(GetUniquePathCorners(path));
+        corners.RemoveAt(0);    // ignore position where unit already stands
+        foreach (Vector3 corner in corners)
         {
-            lineRenderer.positionCount = 0;
+            Field f = GetFieldAt(corner);
+            cost += terrainCosts[(int)f.terrain];
         }
-        else if (path.corners.Length > 1)
+
+        return cost;
+    }
+
+    public Vector3[] GetUniquePathCorners(NavMeshPath path)
+    {
+        if (path.corners.Length > 2)
         {
             List<Vector3> corners = new List<Vector3>();
             corners.Add(path.corners[0]);
@@ -141,9 +156,32 @@ public class MapController : MonoBehaviour
                 if (Vector3.Distance(a, b) > 0.1f)
                     corners.Add(b);
             }
+            return corners.ToArray();
+        }
+        else
+            return path.corners;
+    }
 
-            lineRenderer.positionCount = corners.Count;
-            lineRenderer.SetPositions(corners.ToArray());
+    public void DrawPath(NavMeshPath path, Unit unit = null)
+    {
+        if (unit)
+        {
+            if (PathCost(path) > unit.movementRange)
+            {
+                lineRenderer.positionCount = 0;
+                return;
+            }
+        }
+
+        if (path == null)
+        {
+            lineRenderer.positionCount = 0;
+        }
+        else if (path.corners.Length > 1)
+        {
+            Vector3[] corners = GetUniquePathCorners(path);
+            lineRenderer.positionCount = corners.Length;
+            lineRenderer.SetPositions(corners);
         }
         else
         {
@@ -151,4 +189,5 @@ public class MapController : MonoBehaviour
             lineRenderer.SetPositions(path.corners);
         }
     }
+    #endregion
 }

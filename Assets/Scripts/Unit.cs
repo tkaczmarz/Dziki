@@ -47,7 +47,10 @@ public class Unit : SelectableObject
 			{
 				Vector3 marker = GameController.Instance.marker.transform.position;
 				NavMeshPath path = CalculatePath((int)marker.x, (int)marker.z);
-				MapController.Instance.DrawPath(path);
+				if (MapController.Instance.PathLength(path) <= movementRange + 0.1f)
+					MapController.Instance.DrawPath(path, this);
+				else
+					MapController.Instance.DrawPath(null);
 			}
 		}
 	}
@@ -74,10 +77,14 @@ public class Unit : SelectableObject
 		NavMeshPath path = new NavMeshPath();
 		NavMesh.CalculatePath(transform.position, targetPos, terrainMask, path);
 
-		if (path.status == NavMeshPathStatus.PathComplete)
+		if (path.status == NavMeshPathStatus.PathComplete && MapController.Instance.PathLength(path) <= movementRange + 0.1f)
 		{
-			field.Unit = null;
-			StartCoroutine(Move(path));
+			float cost = MapController.Instance.PathCost(path);
+			if (cost <= movementRange)
+			{
+				field.Unit = null;
+				StartCoroutine(Move(path));
+			}
 		}
 	}
 
@@ -141,6 +148,12 @@ public class Unit : SelectableObject
 		target.TakeDamage(dmg);
 	}
 
+	protected override void Die()
+	{
+		Destroy(gameObject);
+	}
+
+	#region Range drawing
 	private IEnumerator DrawRangeNextFrame()
 	{
 		yield return null;
@@ -157,9 +170,7 @@ public class Unit : SelectableObject
 			for (int x = posX - movementRange; x <= posX + movementRange; x++)
 			{
 				if (!MapController.Instance.IsPointOnMap(x, y))
-				{
 					continue;
-				}
 
 				// position points on a NavMesh
 				Vector3 origin = transform.position;
@@ -176,24 +187,19 @@ public class Unit : SelectableObject
 				if (NavMesh.SamplePosition(targetPos, out hit, 0.5f, terrainMask))
 					targetPos = hit.position;
 				else
-				{
 					continue;
-				}
 				
 				NavMesh.CalculatePath(origin, targetPos, terrainMask, path);
 				if (path == null)
-				{
 					continue;
-				}
 				
 				if (path.status != NavMeshPathStatus.PathComplete)
-				{
 					continue;
-				}
 				
 				// select field if its within range
 				float length = MapController.Instance.PathLength(path);
-				if (length <= movementRange + 0.1f && length > 0)
+				float cost = MapController.Instance.PathCost(path);
+				if (length <= movementRange + 0.1f && length > 0 && cost <= movementRange)
 				{
 					MapController.Instance.GetFieldAt(new Vector3(x, 0, y)).EnableHighlight();
 				}
@@ -214,4 +220,5 @@ public class Unit : SelectableObject
 			}
 		}
 	}
+	#endregion
 }

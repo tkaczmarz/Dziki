@@ -5927,6 +5927,11 @@ Prefab:
       propertyPath: availableTerrains.Array.data[1]
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 114571319608211278, guid: 8f7e88ebfeebce249992cba8e4131963,
+        type: 2}
+      propertyPath: team
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8f7e88ebfeebce249992cba8e4131963, type: 2}
   m_IsPrefabParent: 0

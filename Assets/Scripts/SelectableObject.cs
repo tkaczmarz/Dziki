@@ -75,10 +75,17 @@ public class SelectableObject : MonoBehaviour
 	public void TakeDamage(float amount)
 	{
 		health -= amount;
-		if (health < 0)
-			health = 0;
+		if (health <= 0)
+		{
+			Die();
+		}
 
 		if (healthText)
 			healthText.text = health.ToString();
+	}
+
+	protected virtual void Die()
+	{
+
 	}
 }
