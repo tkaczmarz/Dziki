@@ -85,6 +85,7 @@ public class Unit : SelectableObject
 	private IEnumerator Move(NavMeshPath path)
 	{
 		isMoving = true;
+		DisableRangeHighlight();
 
 		// DEBUG: draw path corners
 		for (int i = 0; i < path.corners.Length; i++)
@@ -124,6 +125,7 @@ public class Unit : SelectableObject
 		base.Deselect();
 		obstacle.carving = true;
 		MapController.Instance.DrawPath(null);
+		DisableRangeHighlight();
 	}
 
 	public void Attack(SelectableObject target)
@@ -149,13 +151,15 @@ public class Unit : SelectableObject
 	{
 		NavMeshPath path = new NavMeshPath();
 		int posX = (int)transform.position.x;
-		int posY = (int)transform.position.y;
+		int posY = (int)transform.position.z;
 		for (int y = posY + movementRange; y >= posY - movementRange; y--)
 		{
 			for (int x = posX - movementRange; x <= posX + movementRange; x++)
 			{
 				if (!MapController.Instance.IsPointOnMap(x, y))
+				{
 					continue;
+				}
 
 				// position points on a NavMesh
 				Vector3 origin = transform.position;
@@ -172,26 +176,41 @@ public class Unit : SelectableObject
 				if (NavMesh.SamplePosition(targetPos, out hit, 0.5f, terrainMask))
 					targetPos = hit.position;
 				else
+				{
 					continue;
+				}
 				
 				NavMesh.CalculatePath(origin, targetPos, terrainMask, path);
 				if (path == null)
-					continue;
-				
-				if (path.status == NavMeshPathStatus.PathInvalid)
 				{
-					Debug.Log(path.status);
+					continue;
+				}
+				
+				if (path.status != NavMeshPathStatus.PathComplete)
+				{
 					continue;
 				}
 				
 				// select field if its within range
 				float length = MapController.Instance.PathLength(path);
-				if (length <= movementRange && length > 0)
+				if (length <= movementRange + 0.1f && length > 0)
 				{
-					GameObject mark = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-					mark.transform.position = new Vector3(x, 0, y);
-					Destroy(mark, 3);
+					MapController.Instance.GetFieldAt(new Vector3(x, 0, y)).EnableHighlight();
 				}
+			}
+		}
+	}
+
+	private void DisableRangeHighlight()
+	{
+		int posX = (int)transform.position.x;
+		int posY = (int)transform.position.z;
+		for (int y = posY + movementRange; y >= posY - movementRange; y--)
+		{
+			for (int x = posX - movementRange; x <= posX + movementRange; x++)
+			{
+				if (MapController.Instance.IsPointOnMap(x, y))
+					MapController.Instance.GetFieldAt(new Vector3(x, 0, y)).DisableHighlight();
 			}
 		}
 	}

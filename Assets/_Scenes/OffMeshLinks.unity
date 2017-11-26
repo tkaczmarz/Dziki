@@ -9703,6 +9703,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 897e3d4224853a045929c10c2850bbb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  highlightMaterial: {fileID: 2100000, guid: 7d05f281eab65e44da6698c7955aa3fb, type: 2}
 --- !u!4 &1233748398
 Transform:
   m_ObjectHideFlags: 0

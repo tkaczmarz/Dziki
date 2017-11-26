@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class MapController : MonoBehaviour
 {
+    public Material highlightMaterial;
+
     public static MapController Instance { get { return instance; } }
     private static MapController instance = null;
 
@@ -19,6 +21,9 @@ public class MapController : MonoBehaviour
         }
         else
             DestroyImmediate(gameObject);
+
+        if (!highlightMaterial)
+            Debug.LogWarning("No highlight material added!");
 
         // get map data
         foreach (Transform row in transform)

@@ -12,6 +12,23 @@ public class Field : MonoBehaviour
 {
 	public TerrainType terrain = TerrainType.Plains;
 
+	private GameObject highlight;
+
+	private void Awake() 
+	{
+		// initialize field highlight
+		highlight = new GameObject("Highlight");
+		highlight.transform.SetParent(transform);
+		highlight.transform.localPosition = new Vector3(0, 0, -0.05f);
+		highlight.transform.localEulerAngles = Vector3.zero;
+		highlight.transform.localScale = Vector3.one;
+		SpriteRenderer sr = highlight.AddComponent<SpriteRenderer>();
+		sr.sprite = GetComponent<SpriteRenderer>().sprite;
+		if (MapController.Instance.highlightMaterial)
+			sr.material = MapController.Instance.highlightMaterial;
+		highlight.SetActive(false);
+	}
+
 	/// <summary>
 	/// First element is Unit and second element is Structure. Both may be null.
 	/// </summary>
@@ -67,5 +84,15 @@ public class Field : MonoBehaviour
 			else
 				return selectables[1];
 		}
+	}
+
+	public void EnableHighlight()
+	{
+		highlight.SetActive(true);
+	}
+
+	public void DisableHighlight()
+	{
+		highlight.SetActive(false);
 	}
 }
