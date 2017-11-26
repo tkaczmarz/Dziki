@@ -8,6 +8,7 @@ public class Unit : SelectableObject
 	public float moveSpeed = 4;
 	public float maxDamage = 50;
 	public float attackRange = 1;
+	public int movementRange = 3;
 
 	private bool isMoving = false;
 	private NavMeshObstacle obstacle;
@@ -57,9 +58,7 @@ public class Unit : SelectableObject
 		Vector3 destination = new Vector3(x, 0, y);
 		NavMesh.CalculatePath(transform.position, destination, terrainMask, path);
 		if (path.status == NavMeshPathStatus.PathComplete)
-		{
 			return path;
-		}
 		else
 			return null;
 	}
@@ -117,6 +116,7 @@ public class Unit : SelectableObject
 	{
 		base.Select();
 		obstacle.carving = false;
+		StartCoroutine(DrawRangeNextFrame());
 	}
 
 	public override void Deselect()
@@ -128,7 +128,7 @@ public class Unit : SelectableObject
 
 	public void Attack(SelectableObject target)
 	{
-		if (target == this)
+		if (target == this || target.team == team)
 			return;
 
 		// can't attack if too far from target
@@ -137,5 +137,62 @@ public class Unit : SelectableObject
 
 		float dmg = (health / maxHealth) * maxDamage;
 		target.TakeDamage(dmg);
+	}
+
+	private IEnumerator DrawRangeNextFrame()
+	{
+		yield return null;
+		DrawMovementRange();
+	}
+
+	private void DrawMovementRange()
+	{
+		NavMeshPath path = new NavMeshPath();
+		int posX = (int)transform.position.x;
+		int posY = (int)transform.position.y;
+		for (int y = posY + movementRange; y >= posY - movementRange; y--)
+		{
+			for (int x = posX - movementRange; x <= posX + movementRange; x++)
+			{
+				if (!MapController.Instance.IsPointOnMap(x, y))
+					continue;
+
+				// position points on a NavMesh
+				Vector3 origin = transform.position;
+				Vector3 targetPos = new Vector3(x, 0, y);
+				NavMeshHit hit = new NavMeshHit();
+				if (NavMesh.SamplePosition(origin, out hit, 0.5f, terrainMask))
+					origin = hit.position;
+				else
+				{
+					Debug.LogWarning("Can't position " + origin + " on a NavMesh!");
+					continue;
+				}
+					
+				if (NavMesh.SamplePosition(targetPos, out hit, 0.5f, terrainMask))
+					targetPos = hit.position;
+				else
+					continue;
+				
+				NavMesh.CalculatePath(origin, targetPos, terrainMask, path);
+				if (path == null)
+					continue;
+				
+				if (path.status == NavMeshPathStatus.PathInvalid)
+				{
+					Debug.Log(path.status);
+					continue;
+				}
+				
+				// select field if its within range
+				float length = MapController.Instance.PathLength(path);
+				if (length <= movementRange && length > 0)
+				{
+					GameObject mark = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+					mark.transform.position = new Vector3(x, 0, y);
+					Destroy(mark, 3);
+				}
+			}
+		}
 	}
 }
