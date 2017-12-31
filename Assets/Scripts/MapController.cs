@@ -143,6 +143,10 @@ public class MapController : MonoBehaviour
         return cost;
     }
 
+    /// <summary>
+    /// Method checks if path corners are not too close to each other  
+    /// and returns an array of unique path positions.
+    /// </summary>
     public Vector3[] GetUniquePathCorners(NavMeshPath path)
     {
         if (path.corners.Length > 2)

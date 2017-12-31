@@ -12,21 +12,12 @@ public class Field : MonoBehaviour
 {
 	public TerrainType terrain = TerrainType.Plains;
 
-	private GameObject highlight;
+	private SpriteRenderer highlight;
 
 	private void Awake() 
 	{
-		// initialize field highlight
-		highlight = new GameObject("Highlight");
-		highlight.transform.SetParent(transform);
-		highlight.transform.localPosition = new Vector3(0, 0, -0.05f);
-		highlight.transform.localEulerAngles = Vector3.zero;
-		highlight.transform.localScale = Vector3.one;
-		SpriteRenderer sr = highlight.AddComponent<SpriteRenderer>();
-		sr.sprite = GetComponent<SpriteRenderer>().sprite;
-		if (MapController.Instance.highlightMaterial)
-			sr.material = MapController.Instance.highlightMaterial;
-		highlight.SetActive(false);
+		highlight = transform.GetChild(0).GetComponent<SpriteRenderer>();
+		highlight.gameObject.SetActive(false);
 	}
 
 	/// <summary>
@@ -86,13 +77,15 @@ public class Field : MonoBehaviour
 		}
 	}
 
-	public void EnableHighlight()
+	public void EnableHighlight(Color color)
 	{
-		highlight.SetActive(true);
+		highlight.gameObject.SetActive(true);
+		color.a = 0.5f;
+		highlight.color = color;
 	}
 
 	public void DisableHighlight()
 	{
-		highlight.SetActive(false);
+		highlight.gameObject.SetActive(false);
 	}
 }

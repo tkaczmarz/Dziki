@@ -57,16 +57,15 @@ public class SelectionMarker : MonoBehaviour
                 DeselectObject();
             }
 
-            selectedObject = field.Selectable;
-            selectedObject.Select();
+            if (field.Selectable.Select())
+                selectedObject = field.Selectable;
         }
     }
 
-    private void DeselectObject()
+    public void DeselectObject()
     {
         if (selectedObject)
         {
-            selectedObject.Deselect();
             selectedObject = null;
         }
     }

@@ -12,6 +12,7 @@ public class Unit : SelectableObject
 
 	private bool isMoving = false;
 	private NavMeshObstacle obstacle;
+	private bool hasMoved = false;
 
 	protected override void Awake() 
 	{
@@ -33,15 +34,21 @@ public class Unit : SelectableObject
 
 		if (Input.GetMouseButtonDown(0))
 		{
+			// attack if pointing an object
 			SelectableObject pointedObject = GameController.Instance.marker.PointedObject;
 			if (pointedObject)
 				Attack(pointedObject);
 
-			Vector3 markerPos = GameController.Instance.marker.transform.position;
-			GoTo((int)markerPos.x, (int)markerPos.z);
+			// move if hasn't moved
+			if (!hasMoved)
+			{
+				Vector3 markerPos = GameController.Instance.marker.transform.position;
+				GoTo((int)markerPos.x, (int)markerPos.z);
+			}
 		}
 
-		if (GameController.Instance.marker.PositionChanged)
+		// drawing path to pointed target position
+		if (GameController.Instance.marker.PositionChanged && !hasMoved)
 		{
 			if (!isMoving)
 			{
@@ -118,25 +125,78 @@ public class Unit : SelectableObject
 		field = MapController.Instance.GetFieldAt(transform.position);
 		field.Unit = this;
 		isMoving = false;
+		hasMoved = true;
+
+		// finish move if can't attack
+		if (!EnemyInRange())
+			FinishMove();
+		else
+			DrawAttackRange();
 	}
 
-	public override void Select()
+	/// <summary>
+	/// Method checks if enemy unit is in attack range of this unit.
+	/// <returns>True if there is an enemy in range.</returns>
+	/// </summary>
+	private bool EnemyInRange()
 	{
-		base.Select();
+		// get all enemy units
+		Team[] teams = GameController.Instance.Teams;
+		foreach (Team team in teams)
+		{
+			if (team.nr != this.team)
+			{
+				foreach (SelectableObject o in team.Troops)
+				{
+					// check if enemy unit is in attack range
+					if (o is Unit)
+					{
+						if (Vector3.Distance(transform.position, o.transform.position) <= attackRange)
+							return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public override bool Select()
+	{
+		// can't select unit if it already finished its move
+		if (isDone)
+			return false;
+
+		if (!base.Select())
+			return false;
+
 		obstacle.carving = false;
-		StartCoroutine(DrawRangeNextFrame());
+		if (!hasMoved)
+			StartCoroutine(DrawRangeNextFrame());
+
+		return true;
 	}
 
-	public override void Deselect()
+	public override bool Deselect()
 	{
-		base.Deselect();
+		if (!base.Deselect())
+			return false;
+
 		obstacle.carving = true;
 		MapController.Instance.DrawPath(null);
 		DisableRangeHighlight();
+		return true;
+	}
+
+	public override void Refresh()
+	{
+		base.Refresh();
+		hasMoved = false;
 	}
 
 	public void Attack(SelectableObject target)
 	{
+		// prevent attacking self or teammate
 		if (target == this || target.team == team)
 			return;
 
@@ -146,6 +206,7 @@ public class Unit : SelectableObject
 
 		float dmg = (health / maxHealth) * maxDamage;
 		target.TakeDamage(dmg);
+		FinishMove();
 	}
 
 	protected override void Die()
@@ -158,8 +219,12 @@ public class Unit : SelectableObject
 	{
 		yield return null;
 		DrawMovementRange();
+		DrawAttackRange();
 	}
 
+	/// <summary>
+	/// Highlight fields that are available to move to.
+	/// </summary>
 	private void DrawMovementRange()
 	{
 		NavMeshPath path = new NavMeshPath();
@@ -201,7 +266,35 @@ public class Unit : SelectableObject
 				float cost = MapController.Instance.PathCost(path);
 				if (length <= movementRange + 0.1f && length > 0 && cost <= movementRange)
 				{
-					MapController.Instance.GetFieldAt(new Vector3(x, 0, y)).EnableHighlight();
+					MapController.Instance.GetFieldAt(new Vector3(x, 0, y)).EnableHighlight(Color.white);
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Highlight enemy targets in attack range.
+	/// </summary>
+	private void DrawAttackRange()
+	{
+		int posY = (int)transform.position.z;
+		int posX = (int)transform.position.x;
+		int range = Mathf.CeilToInt(attackRange);
+
+		for (int y = posY + range; y >= posY - range; y--)
+		{
+			for (int x = posX - range; x <= posX + range; x++)
+			{
+				if (!MapController.Instance.IsPointOnMap(x, y))
+					continue;
+				
+				Field f = MapController.Instance.GetFieldAt(new Vector3(x, 0, y));
+				if (f.Unit && f.Unit.team != team)
+				{
+					if (Vector3.Distance(f.Unit.transform.position, transform.position) <= this.attackRange)
+					{
+						f.EnableHighlight(Color.red);
+					}
 				}
 			}
 		}
