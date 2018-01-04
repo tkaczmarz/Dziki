@@ -211,6 +211,7 @@ public class Unit : SelectableObject
 
 	protected override void Die()
 	{
+		base.Die();
 		Destroy(gameObject);
 	}
 

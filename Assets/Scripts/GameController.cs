@@ -23,8 +23,6 @@ public class GameController : MonoBehaviour
     private List<Team> teams = new List<Team>();
     private Team activeTeam = null;
 
-    private GameController() { }
-
     private void Awake()
     {
         if (instance == null)
@@ -90,13 +88,32 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void FinishTurn()
+    /// <summary>
+    /// Method checks if unit's team has any troops left. If not the other team wins.
+    /// </summary>
+    public void UnitDied(SelectableObject obj)
     {
-        TurnBegin();
+        Team unitTeam = teams[obj.team - 1];
+        unitTeam.Troops.Remove(obj);
+        if (unitTeam.Troops.Count == 0)
+        {
+            // GAME OVER
+            Team winnerTeam = teams[obj.team % teams.Count];
+            nextTurnPanel.Show("Team " + winnerTeam.nr + " wins!", winnerTeam, 5);
+            enabled = false;
+        }
     }
 
-    private void TurnBegin()
+    public void TurnBegin()
     {
+        if (activeTeam)
+        {
+            foreach (SelectableObject obj in activeTeam.Troops)
+            {
+                obj.FinishMove();
+            }
+        }
+
         // assign next team
         int nextTeamIdx = (teams.IndexOf(activeTeam) + 1) % teams.Count;
         activeTeam = teams[nextTeamIdx];

@@ -19387,7 +19387,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1379904924}
-        m_MethodName: FinishTurn
+        m_MethodName: TurnBegin
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

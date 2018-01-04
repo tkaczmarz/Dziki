@@ -108,10 +108,10 @@ public class SelectableObject : MonoBehaviour
 
 	protected virtual void Die()
 	{
-
+		GameController.Instance.UnitDied(this);
 	}
 
-	protected virtual void FinishMove()
+	public virtual void FinishMove()
 	{
 		isDone = true;
 		Deselect();

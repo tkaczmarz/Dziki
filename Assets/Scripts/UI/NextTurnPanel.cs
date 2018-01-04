@@ -16,6 +16,14 @@ public class NextTurnPanel : MonoBehaviour
         StartCoroutine(ActivateForTime(activeTime));
     }
 
+    public void Show(string msg, Team team, float activeTime)
+    {
+        gameObject.SetActive(true);
+        colorBackground.color = team.color;
+        text.text = msg;
+        StartCoroutine(ActivateForTime(activeTime));
+    }
+
     private IEnumerator ActivateForTime(float activeTime)
     {
         float timer = 0.0f;
