@@ -62,6 +62,8 @@ public class Unit : SelectableObject
 		}
 	}
 
+	/// <summary>Method calculates path from this unit's position to given position.</summary>
+	/// <returns>Calculated path or null if unable to find.</returns>
 	private NavMeshPath CalculatePath(int x, int y)
 	{
 		NavMeshPath path = new NavMeshPath();
@@ -73,7 +75,7 @@ public class Unit : SelectableObject
 			return null;
 	}
 
-	// calculates path to target location
+	/// <summary>Moves unit to given position if possible.</summary>
 	public void GoTo(int x, int y)
 	{
 		if (isMoving)
@@ -95,7 +97,7 @@ public class Unit : SelectableObject
 		}
 	}
 
-	// moves unit through given path
+	/// <summary>Coroutine that moves unit through given path.</summary>
 	private IEnumerator Move(NavMeshPath path)
 	{
 		isMoving = true;
@@ -134,10 +136,8 @@ public class Unit : SelectableObject
 			DrawAttackRange();
 	}
 
-	/// <summary>
-	/// Method checks if enemy unit is in attack range of this unit.
+	/// <summary>Method checks if enemy unit is in attack range of this unit.</summary>
 	/// <returns>True if there is an enemy in range.</returns>
-	/// </summary>
 	private bool EnemyInRange()
 	{
 		// get all enemy units
@@ -188,12 +188,14 @@ public class Unit : SelectableObject
 		return true;
 	}
 
+	/// <summary>Enables unit for use (move and attack).</summary>
 	public override void Refresh()
 	{
 		base.Refresh();
 		hasMoved = false;
 	}
 
+	/// <summary>Unit attacks given target if possible.</summary>
 	public void Attack(SelectableObject target)
 	{
 		// prevent attacking self or teammate
@@ -216,6 +218,7 @@ public class Unit : SelectableObject
 	}
 
 	#region Range drawing
+	/// <summary>Method delays drawing of ranges to next frame.</summary>
 	private IEnumerator DrawRangeNextFrame()
 	{
 		yield return null;
@@ -223,9 +226,7 @@ public class Unit : SelectableObject
 		DrawAttackRange();
 	}
 
-	/// <summary>
-	/// Highlight fields that are available to move to.
-	/// </summary>
+	/// <summary>Highlight fields that are available to move to.</summary>
 	private void DrawMovementRange()
 	{
 		NavMeshPath path = new NavMeshPath();
@@ -273,9 +274,7 @@ public class Unit : SelectableObject
 		}
 	}
 
-	/// <summary>
-	/// Highlight enemy targets in attack range.
-	/// </summary>
+	/// <summary>Highlight enemy targets in attack range.</summary>
 	private void DrawAttackRange()
 	{
 		int posY = (int)transform.position.z;

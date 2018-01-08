@@ -6,6 +6,7 @@ public class SelectionMarker : MonoBehaviour
 { 
     public SelectableObject SelectedObject { get { return selectedObject; } }
     public SelectableObject PointedObject { get { return pointedObject; } }
+    /// <summary>Property returns true if marker's position has changed in comparison to previous frame.</summary>
     public bool PositionChanged { get { return positionChanged; } }
 
     private SelectableObject selectedObject = null;
@@ -30,6 +31,7 @@ public class SelectionMarker : MonoBehaviour
             DeselectObject();
     }
 
+    /// <summary>Method moves marker to position (field) pointed by mouse.</summary>
     private void MoveSelection()
     {
         Vector2Int mousePos = MapController.GetMousePos();

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Team : MonoBehaviour 
 {
+    /// <summary>All units and structures that belong to this team.</summary>
     public List<SelectableObject> Troops { get { return troops; } }
 
 	public int nr = 0;

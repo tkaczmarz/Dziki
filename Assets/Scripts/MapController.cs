@@ -10,8 +10,10 @@ public class MapController : MonoBehaviour
     public static MapController Instance { get { return instance; } }
     private static MapController instance = null;
 
+    /// <summary>Full list of fields in 2D map.</summary>
     private List<List<Field>> fields = new List<List<Field>>();
     private LineRenderer lineRenderer;
+    /// <summary>Costs of moving through all types of terrains. Used to calculate path cost.</summary>
     private float[] terrainCosts = { 5, 3, 2, 1.5f, 1 };
 
     private void Awake() 
@@ -56,6 +58,7 @@ public class MapController : MonoBehaviour
         lineRenderer.positionCount = 0;
     }
 
+    /// <summary>Method generates an off mesh link between two given fields.</summary>
     private void CreateOffMeshLink(Field from, Field to)
     {
         OffMeshLink link = from.gameObject.AddComponent<OffMeshLink>();
@@ -65,6 +68,10 @@ public class MapController : MonoBehaviour
         link.area = NavMesh.GetAreaFromName(to.terrain.ToString());
     }
 
+    /// <summary>
+    /// Method returns field on given position.
+    /// <param name="pos">3D position where 'y' axis is ignored and 'z' axis becomes 'y': (x, 0, y).</param>
+    /// </summary>
     public Field GetFieldAt(Vector3 pos)
     {
         int w = Mathf.RoundToInt(pos.x);
@@ -83,6 +90,7 @@ public class MapController : MonoBehaviour
         return fields[h][w];
     }
 
+    /// <summary>Method returns mouse position rounded to integer.</summary>
     public static Vector2Int GetMousePos()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -92,6 +100,7 @@ public class MapController : MonoBehaviour
         return new Vector2Int(x, y);
     }
 
+    /// <summary>Method returns full 3D mouse position.</summary>
     public static Vector3 GetMousePos3()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -101,6 +110,9 @@ public class MapController : MonoBehaviour
         return new Vector3(x, 0, y);
     }
 
+    /// <summary>Method checks if given point is actually on map.
+    /// <returns>True if point is on map.</returns>
+    /// </summary>
     public bool IsPointOnMap(int x, int y)
     {
         if (y >= 0 && y < fields.Count && x >= 0 && x < fields[0].Count)
@@ -126,6 +138,7 @@ public class MapController : MonoBehaviour
         return length;
     }
 
+    /// <summary>Method calculates cost of moving through all terrains on given path.</summary>
     public float PathCost(NavMeshPath path)
     {
         if (path == null)
@@ -166,6 +179,7 @@ public class MapController : MonoBehaviour
             return path.corners;
     }
 
+    /// <summary>Method draws red line which includes all path corners.</summary>
     public void DrawPath(NavMeshPath path, Unit unit = null)
     {
         if (unit)

@@ -7,13 +7,17 @@ using UnityEngine.AI;
 [RequireComponent(typeof(SpriteRenderer))]
 public class SelectableObject : MonoBehaviour 
 {
+	/// <summary>Types of terrain that this object can stand on.</summary>
 	public TerrainType[] availableTerrains = { TerrainType.Road, TerrainType.Forest, TerrainType.Plains };
 	public float maxHealth = 100;
 	public float health = 100;
 	public int team = 0;
+
+	/// <summary>True if all object's actions are finished. False otherwise.</summary>
 	public bool IsDone { get { return isDone; } }
 
 	protected bool selected = false;
+	/// <summary>Field that object stands on.</summary>
 	protected Field field = null;
 	protected int terrainMask = 0;
 	protected Text healthText;

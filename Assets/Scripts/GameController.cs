@@ -10,7 +10,9 @@ public class GameController : MonoBehaviour
     private static GameController instance = null;
 
     public NextTurnPanel nextTurnPanel;
+    /// <summary>Currently active team.</summary>
     public Team ActiveTeam { get { return activeTeam; } }
+    /// <summary>Array of all teams.</summary>
     public Team[] Teams { get { return teams.ToArray(); } }
 
     public GameObject selectionMarkerPrefab;
@@ -49,9 +51,7 @@ public class GameController : MonoBehaviour
         TurnBegin();
     }
 
-    /// <summary>
-    /// Method creates Team components based on units' team numbers.
-    /// </summary>
+    /// <summary>Method creates Team components based on units' team numbers.</summary>
     private void CreateTeams()
     {
         // count teams
@@ -88,9 +88,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Method checks if unit's team has any troops left. If not the other team wins.
-    /// </summary>
+    /// <summary>Method checks if unit's team has any troops left. If not the other team wins.</summary>
     public void UnitDied(SelectableObject obj)
     {
         Team unitTeam = teams[obj.team - 1];
@@ -104,6 +102,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+    /// <summary>Initiate new turn of next team.</summary>
     public void TurnBegin()
     {
         if (activeTeam)

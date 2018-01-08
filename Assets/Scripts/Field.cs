@@ -25,6 +25,10 @@ public class Field : MonoBehaviour
 	/// </summary>
 	private SelectableObject[] selectables = { null, null };
 
+	/// <summary>
+	/// Assigning unit object to this property moves it in map hierarchy.
+	/// <returns>Unit which is standing on this field or null if none is available.</returns>
+	/// </summary>
 	public Unit Unit 
 	{ 
 		get { return selectables[0] as Unit; } 
@@ -44,6 +48,10 @@ public class Field : MonoBehaviour
 		}
 	}
 	
+	/// <summary>
+	/// Assigning structure object to this property moves it in map hierarchy.
+	/// <returns>Structure which is standing on this field or null if none is available.</returns>
+	/// </summary>
 	public Structure Structure
 	{
 		get { return selectables[1] as Structure; }
