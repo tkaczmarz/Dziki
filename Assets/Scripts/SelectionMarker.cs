@@ -44,7 +44,7 @@ public class SelectionMarker : MonoBehaviour
                 positionChanged = true;
 
                 // set pointed object
-                pointedObject = MapController.Instance.GetFieldAt(transform.position).Unit;
+                pointedObject = MapController.Instance.GetFieldAt(transform.position).Selectable;
             }
         }
     }

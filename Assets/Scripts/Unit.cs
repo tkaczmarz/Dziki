@@ -11,14 +11,12 @@ public class Unit : SelectableObject
 	public int movementRange = 3;
 
 	private bool isMoving = false;
-	private NavMeshObstacle obstacle;
 	private bool hasMoved = false;
 
 	protected override void Awake() 
 	{
 		base.Awake();
 
-		obstacle = GetComponent<NavMeshObstacle>();
 		obstacle.carving = true;
 
 		field = MapController.Instance.GetFieldAt(transform.position);
@@ -136,11 +134,11 @@ public class Unit : SelectableObject
 			DrawAttackRange();
 	}
 
-	/// <summary>Method checks if enemy unit is in attack range of this unit.</summary>
+	/// <summary>Method checks if enemy object is in attack range of this unit.</summary>
 	/// <returns>True if there is an enemy in range.</returns>
 	private bool EnemyInRange()
 	{
-		// get all enemy units
+		// get all enemy troops
 		Team[] teams = GameController.Instance.Teams;
 		foreach (Team team in teams)
 		{
@@ -148,12 +146,9 @@ public class Unit : SelectableObject
 			{
 				foreach (SelectableObject o in team.Troops)
 				{
-					// check if enemy unit is in attack range
-					if (o is Unit)
-					{
-						if (Vector3.Distance(transform.position, o.transform.position) <= attackRange)
-							return true;
-					}
+					// check if enemy object is in attack range
+					if (Vector3.Distance(transform.position, o.transform.position) <= attackRange)
+						return true;
 				}
 			}
 		}
@@ -171,8 +166,7 @@ public class Unit : SelectableObject
 			return false;
 
 		obstacle.carving = false;
-		if (!hasMoved)
-			StartCoroutine(DrawRangeNextFrame());
+		StartCoroutine(DrawRangeNextFrame());
 
 		return true;
 	}
@@ -199,9 +193,9 @@ public class Unit : SelectableObject
 	public void Attack(SelectableObject target)
 	{
 		// prevent attacking self or teammate
-		if (target == this || target.team == team)
+		if (target == this || target.team == team || target.IsDead)
 			return;
-
+		
 		// can't attack if too far from target
 		if (Vector3.Distance(transform.position, target.transform.position) > attackRange)
 			return;
@@ -222,7 +216,8 @@ public class Unit : SelectableObject
 	private IEnumerator DrawRangeNextFrame()
 	{
 		yield return null;
-		DrawMovementRange();
+		if (!hasMoved)
+			DrawMovementRange();
 		DrawAttackRange();
 	}
 
@@ -289,9 +284,9 @@ public class Unit : SelectableObject
 					continue;
 				
 				Field f = MapController.Instance.GetFieldAt(new Vector3(x, 0, y));
-				if (f.Unit && f.Unit.team != team)
+				if (f.Selectable && f.Selectable.team != team && !f.Selectable.IsDead)
 				{
-					if (Vector3.Distance(f.Unit.transform.position, transform.position) <= this.attackRange)
+					if (Vector3.Distance(f.Selectable.transform.position, transform.position) <= this.attackRange)
 					{
 						f.EnableHighlight(Color.red);
 					}

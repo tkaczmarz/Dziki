@@ -15,6 +15,7 @@ public class SelectableObject : MonoBehaviour
 
 	/// <summary>True if all object's actions are finished. False otherwise.</summary>
 	public bool IsDone { get { return isDone; } }
+	public bool IsDead { get { return isDead; } }
 
 	protected bool selected = false;
 	/// <summary>Field that object stands on.</summary>
@@ -23,6 +24,8 @@ public class SelectableObject : MonoBehaviour
 	protected Text healthText;
 	protected SpriteRenderer spriteRenderer;
 	protected bool isDone = false;
+	protected NavMeshObstacle obstacle;
+	protected bool isDead = false;
 
 	private SpriteRenderer teamColor;
 	private Color normalColor;
@@ -36,7 +39,7 @@ public class SelectableObject : MonoBehaviour
 		{
 			if (health > maxHealth)
 				health = maxHealth;
-			healthText.text = (Mathf.RoundToInt(health / 10)).ToString();
+			RefreshHealthText();
 		}
 
 		spriteRenderer = GetComponent<SpriteRenderer>();
@@ -47,6 +50,13 @@ public class SelectableObject : MonoBehaviour
 
 		normalColor = spriteRenderer.color;
 		dimmedColor = normalColor * 0.8f;
+
+		obstacle = GetComponent<NavMeshObstacle>();
+		if (!obstacle)
+		{
+			obstacle = gameObject.AddComponent<NavMeshObstacle>();
+			obstacle.carving = true;
+		}
 		// ///////////////////////////////////////////////////
 
 		// create terrain mask
@@ -106,13 +116,22 @@ public class SelectableObject : MonoBehaviour
 			Die();
 		}
 
-		if (healthText)
-			healthText.text = (Mathf.RoundToInt(health / 10)).ToString();
+		RefreshHealthText();
+	}
+
+	public virtual void Heal(float value)
+	{
+		if (health + value > maxHealth)
+			health = maxHealth;
+		else
+			health += value;
+		RefreshHealthText();
 	}
 
 	protected virtual void Die()
 	{
 		GameController.Instance.UnitDied(this);
+		isDead = true;
 	}
 
 	public virtual void FinishMove()
@@ -135,5 +154,14 @@ public class SelectableObject : MonoBehaviour
 		isDone = false;
 		if (spriteRenderer)
 			spriteRenderer.color = normalColor;
+	}
+
+	protected void RefreshHealthText()
+	{
+		int h = Mathf.RoundToInt(health / 10);
+		if (h == 0)
+			healthText.text = "1";
+		else
+			healthText.text = h.ToString();
 	}
 }
