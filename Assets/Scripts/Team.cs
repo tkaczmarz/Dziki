@@ -18,4 +18,14 @@ public class Team : MonoBehaviour
             o.Refresh();
         }
     }
+
+    public bool HasUnits()
+    {
+        foreach (SelectableObject obj in troops)
+        {
+            if (obj is Unit)
+                return true;
+        }
+        return false;
+    }
 }

@@ -172,6 +172,7 @@ MonoBehaviour:
   maxHealth: 100
   health: 100
   team: 2
+  destroyedSprite: {fileID: 21300030, guid: 61bda409e13a345bcb9e55db18b42f74, type: 3}
 --- !u!114 &114617967375708872
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -18,6 +18,7 @@ public class NextTurnPanel : MonoBehaviour
         gameObject.SetActive(true);
         colorBackground.color = team.color;
         text.text = "Turn of team " + team.nr;
+        StopAllCoroutines();
         StartCoroutine(ActivateForTime(activeTime));
     }
 
@@ -32,6 +33,7 @@ public class NextTurnPanel : MonoBehaviour
         gameObject.SetActive(true);
         colorBackground.color = team.color;
         text.text = msg;
+        StopAllCoroutines();
         StartCoroutine(ActivateForTime(activeTime));
     }
 

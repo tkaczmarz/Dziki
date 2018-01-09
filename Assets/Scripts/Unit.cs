@@ -41,7 +41,8 @@ public class Unit : SelectableObject
 			if (!hasMoved)
 			{
 				Vector3 markerPos = GameController.Instance.marker.transform.position;
-				GoTo((int)markerPos.x, (int)markerPos.z);
+				if (markerPos != transform.position)
+					GoTo((int)markerPos.x, (int)markerPos.z);
 			}
 		}
 
@@ -173,6 +174,9 @@ public class Unit : SelectableObject
 
 	public override bool Deselect()
 	{
+		if (isMoving)
+			return false;
+
 		if (!base.Deselect())
 			return false;
 
@@ -237,6 +241,10 @@ public class Unit : SelectableObject
 				// position points on a NavMesh
 				Vector3 origin = transform.position;
 				Vector3 targetPos = new Vector3(x, 0, y);
+
+				if (MapController.Instance.GetFieldAt(targetPos).Unit)
+					continue;
+
 				NavMeshHit hit = new NavMeshHit();
 				if (NavMesh.SamplePosition(origin, out hit, 0.5f, terrainMask))
 					origin = hit.position;

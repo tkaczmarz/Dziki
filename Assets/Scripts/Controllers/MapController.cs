@@ -55,7 +55,10 @@ public class MapController : MonoBehaviour
         }
 
         lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.positionCount = 0;
+        if (lineRenderer)
+        {
+            lineRenderer.positionCount = 0;
+        }
     }
 
     /// <summary>Method generates an off mesh link between two given fields.</summary>
@@ -68,10 +71,8 @@ public class MapController : MonoBehaviour
         link.area = NavMesh.GetAreaFromName(to.terrain.ToString());
     }
 
-    /// <summary>
-    /// Method returns field on given position.
+    /// <summary>Method returns field on given position.</summary>
     /// <param name="pos">3D position where 'y' axis is ignored and 'z' axis becomes 'y': (x, 0, y).</param>
-    /// </summary>
     public Field GetFieldAt(Vector3 pos)
     {
         int w = Mathf.RoundToInt(pos.x);
@@ -110,9 +111,8 @@ public class MapController : MonoBehaviour
         return new Vector3(x, 0, y);
     }
 
-    /// <summary>Method checks if given point is actually on map.
+    /// <summary>Method checks if given point is actually on map.</summary>
     /// <returns>True if point is on map.</returns>
-    /// </summary>
     public bool IsPointOnMap(int x, int y)
     {
         if (y >= 0 && y < fields.Count && x >= 0 && x < fields[0].Count)

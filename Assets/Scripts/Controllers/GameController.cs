@@ -93,7 +93,7 @@ public class GameController : MonoBehaviour
     {
         Team unitTeam = teams[obj.team - 1];
         unitTeam.Troops.Remove(obj);
-        if (unitTeam.Troops.Count == 0)
+        if (!unitTeam.HasUnits())
         {
             // GAME OVER
             Team winnerTeam = teams[obj.team % teams.Count];
@@ -116,7 +116,7 @@ public class GameController : MonoBehaviour
         // assign next team
         int nextTeamIdx = (teams.IndexOf(activeTeam) + 1) % teams.Count;
         activeTeam = teams[nextTeamIdx];
-        nextTurnPanel.Show(activeTeam, 3);
+        nextTurnPanel.Show(activeTeam, 1.5f);
         foreach (Team team in teams)
         {
             team.RefreshTroops();

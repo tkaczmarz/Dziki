@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Structure : SelectableObject 
 {
+	public Sprite destroyedSprite;
+
 	protected override void Awake()
 	{
 		base.Awake();
@@ -18,6 +20,10 @@ public class Structure : SelectableObject
 		healthText.transform.parent.gameObject.SetActive(false);
 		obstacle.carving = false;
 		// change sprite to 'destroyed structure'
+		if (destroyedSprite)
+		{
+			GetComponent<SpriteRenderer>().sprite = destroyedSprite;
+		}
 	}
 
 	public override void Refresh()

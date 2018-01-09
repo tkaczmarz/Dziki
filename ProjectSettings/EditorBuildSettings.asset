@@ -5,6 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/_Scenes/Test.unity
-    guid: be2443ee515089c40a69f6a04deffd08
+    path: Assets/_Scenes/MainMenu.unity
+    guid: 247c7ebf05a5b224ca862c0b266e53e8
+  - enabled: 1
+    path: Assets/_Scenes/OffMeshLinks.unity
+    guid: e76f06d4743ac2a4e861c0e821bae4cb
