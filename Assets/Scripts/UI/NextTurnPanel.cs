@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class NextTurnPanel : MonoBehaviour 
@@ -8,31 +9,51 @@ public class NextTurnPanel : MonoBehaviour
 	public Image colorBackground;
     public Text text;
 
-    /// <summary>
-    /// Method displays banner showing which team's turn it is.
-    /// <param name="team">Team which turn it is. It's number and color is used.</param>
-    /// <param name="activeTime">How long will the banner be shown in seconds.</param>
+    private UnityAction action = null;
+
+    private void OnDisable() 
+    {
+        if (action != null)
+        {
+            action.Invoke();
+            action = null;
+        }
+    }
+
+    /// <summary>Method displays banner showing which team's turn it is.
     /// </summary>
-    public void Show(Team team, float activeTime)
+    /// <param name="team">Team which turn it is. It's number and color is used.
+    /// </param>
+    /// <param name="activeTime">How long will the banner be shown in seconds.
+    /// </param>
+    /// <param name="onDisableAction">Action that will be executed when banner disappears.
+    /// </param>
+    public void Show(Team team, float activeTime, UnityAction onDisableAction = null)
     {
         gameObject.SetActive(true);
         colorBackground.color = team.color;
         text.text = "Turn of team " + team.nr;
+        action = onDisableAction;
         StopAllCoroutines();
         StartCoroutine(ActivateForTime(activeTime));
     }
 
-    /// <summary>
-    /// Method displays banner with given text message.
-    /// <param name="msg">Message to display.</param>
-    /// <param name="team">Team which turn it is. It's number and color is used.</param>
-    /// <param name="activeTime">How long will the banner be shown in seconds.</param>
+    /// <summary>Method displays banner with given text message.
     /// </summary>
-    public void Show(string msg, Team team, float activeTime)
+    /// <param name="msg">Message to display.
+    /// </param>
+    /// <param name="team">Team which turn it is. It's number and color is used.
+    /// </param>
+    /// <param name="activeTime">How long will the banner be shown in seconds.
+    /// </param>
+    /// <param name="onDisableAction">Action that will be executed when banner disappears.
+    /// </param>
+    public void Show(string msg, Team team, float activeTime, UnityAction onDisableAction = null)
     {
         gameObject.SetActive(true);
         colorBackground.color = team.color;
         text.text = msg;
+        action = onDisableAction;
         StopAllCoroutines();
         StartCoroutine(ActivateForTime(activeTime));
     }

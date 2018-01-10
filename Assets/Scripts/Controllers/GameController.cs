@@ -95,11 +95,14 @@ public class GameController : MonoBehaviour
         unitTeam.Troops.Remove(obj);
         if (!unitTeam.HasUnits())
         {
-            // GAME OVER
-            Team winnerTeam = teams[obj.team % teams.Count];
-            nextTurnPanel.Show("Team " + winnerTeam.nr + " wins!", winnerTeam, 5);
-            enabled = false;
+            GameOver(teams[obj.team % teams.Count]);
         }
+    }
+
+    private void GameOver(Team winnerTeam)
+    {
+        nextTurnPanel.Show("Team " + winnerTeam.nr + " wins!", winnerTeam, 5, () => { LevelLoader.Instance.LoadMainMenu(); });
+        enabled = false;
     }
 
     /// <summary>Initiate new turn of next team.</summary>
