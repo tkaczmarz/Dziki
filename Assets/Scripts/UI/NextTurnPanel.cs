@@ -4,21 +4,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class NextTurnPanel : MonoBehaviour 
+public class NextTurnPanel : DialogBase 
 {
 	public Image colorBackground;
     public Text text;
-
-    private UnityAction action = null;
-
-    private void OnDisable() 
-    {
-        if (action != null)
-        {
-            action.Invoke();
-            action = null;
-        }
-    }
 
     /// <summary>Method displays banner showing which team's turn it is.
     /// </summary>
@@ -56,16 +45,5 @@ public class NextTurnPanel : MonoBehaviour
         action = onDisableAction;
         StopAllCoroutines();
         StartCoroutine(ActivateForTime(activeTime));
-    }
-
-    private IEnumerator ActivateForTime(float activeTime)
-    {
-        float timer = 0.0f;
-        while (timer < activeTime)
-        {
-            yield return null;
-            timer += Time.deltaTime;
-        }
-        gameObject.SetActive(false);
     }
 }
