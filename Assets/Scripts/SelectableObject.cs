@@ -26,6 +26,7 @@ public class SelectableObject : MonoBehaviour
 	protected bool isDone = false;
 	protected NavMeshObstacle obstacle;
 	protected bool isDead = false;
+	protected ParticleSystem hitParticles;
 
 	private SpriteRenderer teamColor;
 	private Color normalColor;
@@ -57,6 +58,8 @@ public class SelectableObject : MonoBehaviour
 			obstacle = gameObject.AddComponent<NavMeshObstacle>();
 			obstacle.carving = true;
 		}
+
+		hitParticles = GetComponentInChildren<ParticleSystem>();
 		// ///////////////////////////////////////////////////
 
 		// create terrain mask
@@ -111,6 +114,8 @@ public class SelectableObject : MonoBehaviour
 	public void TakeDamage(float amount)
 	{
 		health -= amount;
+		if (hitParticles)
+			hitParticles.Emit(20);
 		if (health <= 0)
 		{
 			Die();
@@ -159,9 +164,14 @@ public class SelectableObject : MonoBehaviour
 	protected void RefreshHealthText()
 	{
 		int h = Mathf.RoundToInt(health / 10);
-		if (h == 0)
+		if (h == 0 && health > 0)
 			healthText.text = "1";
 		else
-			healthText.text = h.ToString();
+		{
+			if (h < 0)
+				healthText.text = "0";
+			else
+				healthText.text = h.ToString();
+		}
 	}
 }
