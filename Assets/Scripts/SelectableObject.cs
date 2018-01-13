@@ -163,7 +163,7 @@ public class SelectableObject : MonoBehaviour
 
 	protected void RefreshHealthText()
 	{
-		int h = Mathf.RoundToInt(health / 10);
+		int h = Mathf.RoundToInt(health / maxHealth * 10);
 		if (h == 0 && health > 0)
 			healthText.text = "1";
 		else

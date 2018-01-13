@@ -194,7 +194,7 @@ public class Unit : SelectableObject
 	}
 
 	/// <summary>Unit attacks given target if possible.</summary>
-	public void Attack(SelectableObject target)
+	public virtual void Attack(SelectableObject target)
 	{
 		// prevent attacking self or teammate
 		if (target == this || target.team == team || target.IsDead)
@@ -278,7 +278,7 @@ public class Unit : SelectableObject
 	}
 
 	/// <summary>Highlight enemy targets in attack range.</summary>
-	private void DrawAttackRange()
+	private void DrawAttackRange(bool drawFullRange = false)
 	{
 		int posY = (int)transform.position.z;
 		int posX = (int)transform.position.x;
@@ -292,11 +292,22 @@ public class Unit : SelectableObject
 					continue;
 				
 				Field f = MapController.Instance.GetFieldAt(new Vector3(x, 0, y));
-				if (f.Selectable && f.Selectable.team != team && !f.Selectable.IsDead)
+
+				if (drawFullRange)
 				{
-					if (Vector3.Distance(f.Selectable.transform.position, transform.position) <= this.attackRange)
+					if (Vector3.Distance(f.transform.position, transform.position) <= this.attackRange)
 					{
 						f.EnableHighlight(Color.red);
+					}
+				}
+				else
+				{
+					if (f.Selectable && f.Selectable.team != team && !f.Selectable.IsDead)
+					{
+						if (Vector3.Distance(f.Selectable.transform.position, transform.position) <= this.attackRange)
+						{
+							f.EnableHighlight(Color.red);
+						}
 					}
 				}
 			}
@@ -307,9 +318,11 @@ public class Unit : SelectableObject
 	{
 		int posX = (int)transform.position.x;
 		int posY = (int)transform.position.z;
-		for (int y = posY + movementRange; y >= posY - movementRange; y--)
+		int range = attackRange > movementRange ? Mathf.CeilToInt(attackRange) : movementRange;
+
+		for (int y = posY + range; y >= posY - range; y--)
 		{
-			for (int x = posX - movementRange; x <= posX + movementRange; x++)
+			for (int x = posX - range; x <= posX + range; x++)
 			{
 				if (MapController.Instance.IsPointOnMap(x, y))
 					MapController.Instance.GetFieldAt(new Vector3(x, 0, y)).DisableHighlight();
