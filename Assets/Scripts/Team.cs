@@ -9,7 +9,13 @@ public class Team : MonoBehaviour
 
 	public int nr = 0;
     public Color color;
+    public string leader;
     private List<SelectableObject> troops = new List<SelectableObject>();
+
+    private void Awake() 
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     public void RefreshTroops()
     {
