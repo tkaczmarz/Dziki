@@ -10,6 +10,7 @@ public class Team : MonoBehaviour
 	public int nr = 0;
     public Color color;
     public string leader;
+    public bool isAdmin = false;
     private List<SelectableObject> troops = new List<SelectableObject>();
 
     private void Awake() 

@@ -3,6 +3,9 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
+/Assets/Scripts/Server-comm/
+/Assets/Scripts/Server-comm.meta
+/Server/
 
 # Visual Studio 2015 cache directory
 /.vs/
