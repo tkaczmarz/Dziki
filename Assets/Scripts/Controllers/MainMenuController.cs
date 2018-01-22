@@ -74,7 +74,14 @@ public class MainMenuController : MonoBehaviour
 
     public void BackToMenuButtonAction()
     {
-        bannerAnim.SetBool("Show", false);
+        if (roomDialog.activeSelf)
+        {
+            roomDialog.gameObject.SetActive(false);
+            createLobbyDialog.gameObject.SetActive(true);
+            lobbyText.text = "Stwórz lub wyszukaj grę";
+        }
+        else
+            bannerAnim.SetBool("Show", false);
     }
 
 	public void LoadMainScene()
@@ -105,21 +112,64 @@ public class MainMenuController : MonoBehaviour
         }
 
         Debug.Log("CREATING NEW ROOM " + roomName + " for " + playerTeam.leader);
-        string result = RoomManager.addRoom(playerTeam.leader, roomName, 4);
-
-        if (result == "success")
+        string result = "";
+        try
         {
-            Debug.Log("Room creation successful");
-            createLobbyDialog.SetActive(false);
-            roomDialog.SetActive(true);
-            lobbyText.text = roomName;
+            result = RoomManager.addRoom(playerTeam.leader, roomName, 4);
 
-            playerTeam.isAdmin = true;
-            if (slots.Length > 0)
-                slots[0].Occupy(playerTeam, null);
+            if (result == "success")
+            {
+                Debug.Log("Room creation successful");
+                createLobbyDialog.SetActive(false);
+                roomDialog.SetActive(true);
+                lobbyText.text = roomName;
+
+                playerTeam.isAdmin = true;
+                if (slots.Length > 0)
+                    slots[0].Occupy(playerTeam, null);
+            }
+            else
+                MessageDialog.Create().Show("Serwer nie odpowiada. Spróbuj ponownie później.");
         }
-        else
-            Debug.LogError("Server error during room creation");
+        catch (Exception e)
+        {
+            Debug.LogError("Server exception: " + e.StackTrace);
+            MessageDialog.Create().Show("Serwer nie odpowiada. Spróbuj ponownie później.");
+        }
+    }
+
+    public void EnterRoom()
+    {
+        string roomName = roomNameField.text;
+        if (!NicknameValid(roomName))
+        {
+            MessageDialog.Create(35, 25).Show("Nazwa pokoju musi składać się z 2-20 znaków!");
+            return;
+        }
+
+        string result = "";
+        try
+        {
+            result = PlayerManager.addPlayer(roomName, "", playerTeam.leader);
+            
+            if (result == "successful")
+            {
+                Debug.Log("Entered room successfully!");
+                createLobbyDialog.SetActive(false);
+                roomDialog.SetActive(true);
+                lobbyText.text = roomName;
+
+                if (slots.Length > 0)
+                    slots[0].Occupy(playerTeam, null);
+            }
+            else
+                MessageDialog.Create().Show("Nie udało się dołączyć do pokoju '" + roomName + "'");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Server exception: " + e.StackTrace);
+            MessageDialog.Create().Show("Nie udało się dołączyć do pokoju '" + roomName + "'");
+        }
     }
 
     public void ChangeSlot(int i)
