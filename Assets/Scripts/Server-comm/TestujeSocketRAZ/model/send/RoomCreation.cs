@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TestujeSocketRAZ.factory;
 
 namespace TestujeSocketRAZ.model.send
 {
@@ -12,6 +13,8 @@ namespace TestujeSocketRAZ.model.send
         public string playerName { get; set; }
         public string roomName { get; set; }
         public int maxRoomSize { get; set; }
+        private bool cancelConnection = false;
+        private string message;
 
         public RoomCreation(String playerName, String roomName, int maxRoomSize)
         {
@@ -19,6 +22,5 @@ namespace TestujeSocketRAZ.model.send
             this.roomName = roomName;
             this.maxRoomSize = maxRoomSize;
         }
-
     }
 }

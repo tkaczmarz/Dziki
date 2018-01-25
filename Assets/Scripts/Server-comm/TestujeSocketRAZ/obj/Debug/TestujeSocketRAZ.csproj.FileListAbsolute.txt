@@ -1,9 +1,0 @@
-C:\Users\jodanpotasu\source\repos\TestujeSocketRAZ\TestujeSocketRAZ\bin\Debug\TestujeSocketRAZ.exe.config
-C:\Users\jodanpotasu\source\repos\TestujeSocketRAZ\TestujeSocketRAZ\bin\Debug\TestujeSocketRAZ.exe
-C:\Users\jodanpotasu\source\repos\TestujeSocketRAZ\TestujeSocketRAZ\bin\Debug\TestujeSocketRAZ.pdb
-C:\Users\jodanpotasu\source\repos\TestujeSocketRAZ\TestujeSocketRAZ\obj\Debug\TestujeSocketRAZ.csproj.CoreCompileInputs.cache
-C:\Users\jodanpotasu\source\repos\TestujeSocketRAZ\TestujeSocketRAZ\obj\Debug\TestujeSocketRAZ.exe
-C:\Users\jodanpotasu\source\repos\TestujeSocketRAZ\TestujeSocketRAZ\obj\Debug\TestujeSocketRAZ.pdb
-C:\Users\jodanpotasu\source\repos\TestujeSocketRAZ\TestujeSocketRAZ\bin\Debug\Newtonsoft.Json.dll
-C:\Users\jodanpotasu\source\repos\TestujeSocketRAZ\TestujeSocketRAZ\bin\Debug\Newtonsoft.Json.xml
-C:\Users\jodanpotasu\source\repos\TestujeSocketRAZ\TestujeSocketRAZ\obj\Debug\TestujeSocketRAZ.csprojResolveAssemblyReference.cache

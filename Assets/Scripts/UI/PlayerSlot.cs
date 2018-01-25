@@ -16,7 +16,7 @@ public class PlayerSlot : MonoBehaviour
     public void Initialize()
     {
         playerNameText.text = "<pusty>";
-        occupyButton.gameObject.SetActive(true);
+        // occupyButton.gameObject.SetActive(true);
         kickButton.gameObject.SetActive(false);
         isEmpty = true;
     }
