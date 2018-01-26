@@ -92,6 +92,9 @@ public class SelectableObject : MonoBehaviour
 
 	public virtual bool Select()
 	{
+		if (GameController.Instance.ActiveTeam.nr != GameController.Instance.Player.nr)
+			return false;
+
 		if (GameController.Instance.ActiveTeam.nr != team)
 			return false;
 

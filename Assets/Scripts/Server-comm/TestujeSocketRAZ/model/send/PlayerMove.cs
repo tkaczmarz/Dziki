@@ -10,7 +10,13 @@ namespace TestujeSocketRAZ.model.send
     class PlayerMove : Request
     {
         public string commType = "playerMove";
-        public string dupa = "dupa"; //tutaj mozesz stworzyc swoje pola
+        public string test = "test"; //tutaj mozesz stworzyc swoje pola
+
+        public string additionalInformations()
+        {
+            return "";
+        }
+
         //twoje pola
         //kolejne pole
         //kolejne etc
@@ -27,7 +33,7 @@ namespace TestujeSocketRAZ.model.send
 
         public string responseMessage()
         {
-            return dupa;//tutaj tez mozesz wlasna wiadomosc wyslac "gracz zmienil pozycje z... do ...
+            return test;//tutaj tez mozesz wlasna wiadomosc wyslac "gracz zmienil pozycje z... do ...
         }
     }
 }

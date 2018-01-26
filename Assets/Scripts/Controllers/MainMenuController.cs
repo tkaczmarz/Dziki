@@ -33,6 +33,7 @@ public class MainMenuController : MonoBehaviour
     private Button gameStartButton;
     private string roomName = "";
     private string adminName = "";
+    private Lobby lobby;
 
     private void Awake() 
     {
@@ -69,7 +70,8 @@ public class MainMenuController : MonoBehaviour
         createLobbyDialog.gameObject.SetActive(true);
 
         gameStartButton = roomDialog.GetComponentInChildren<Button>();
-        Debug.Log("Found " + gameStartButton.name + " for start button");
+
+        lobby = playerTeam.gameObject.GetComponent<Lobby>();
     }
 
     public void PlayButtonAction()
@@ -152,11 +154,14 @@ public class MainMenuController : MonoBehaviour
         try
         {
             RoomManager rm = new RoomManager();
-            bool result = rm.addRoom(playerTeam.leader, roomName, 4);
+            int port = rm.addRoom(playerTeam.leader, roomName, 4);
+            bool result = port == -1 ? false : true;
             
             if (result)
             {
                 Debug.Log("Room creation successful");
+                StartCoroutine(lobby.WaitForServerCommands(port));
+
                 playerTeam.isAdmin = true;
                 createLobbyDialog.SetActive(false);
                 roomDialog.SetActive(true);
@@ -196,12 +201,23 @@ public class MainMenuController : MonoBehaviour
         try
         {
             PlayerManager pm = new PlayerManager();
-            bool result = pm.addPlayer(roomName, "", playerTeam.leader);
+            List<string> playerList;
+            int port = pm.addPlayer(roomName, "", playerTeam.leader, out playerList);
+            bool result = port == -1 ? false : true;
             
             if (result)
             {
                 playerTeam.isAdmin = false;
                 Debug.Log("Entered room successfully!");
+                StartCoroutine(lobby.WaitForServerCommands(port));
+
+                // place players on their slots
+                for (int i = 0; i < playerList.Count; i++)
+                {
+                    slots[i].playerNameText.text = playerList[i];
+                }
+                playerTeam.nr = playerList.Count;
+
                 createLobbyDialog.SetActive(false);
                 roomDialog.SetActive(true);
                 if (gameStartButton && playerTeam.isAdmin)
@@ -211,8 +227,8 @@ public class MainMenuController : MonoBehaviour
                     
                 lobbyText.text = roomName;
 
-                if (slots.Length > 0)
-                    slots[0].Occupy(playerTeam, null);
+                // if (slots.Length > 0)
+                //     slots[0].Occupy(playerTeam, null);
             }
             else
             {
@@ -241,25 +257,49 @@ public class MainMenuController : MonoBehaviour
         targetSlot.Occupy(playerTeam, previousSlot);
     }
 
-    public void StartGame()
+    public void RefreshPlayerNames(List<string> names)
     {
-        // if (roomName.Equals("") || adminName.Equals(""))
-        // {
-        //     MessageDialog.Create().Show("Błąd!");
-        //     return;
-        // }
+        for (int i = 0; i < names.Count; i++)
+        {
+            Debug.Log("NAME " + i + ": "+ names[i]);
+            slots[i].playerNameText.text = names[i];
+        }
+    }
 
+    public void SendStartRequest()
+    {
         RoomManager rm = new RoomManager();
-        bool result = rm.roomStart("qwer", "", "asdf");
-        // bool result = rm.roomStart(roomName, "", adminName);
+        bool result = rm.roomStart(roomName, "", "");
+    }
 
-        if (result)
+    List<Team> teams = new List<Team>();
+    public void StartGame(bool online = false)
+    {
+        Debug.Log("Starting room " + roomName);
+
+        foreach (PlayerSlot slot in slots)
         {
-            MessageDialog.Create().Show("Rozpoczynam grę!");
+            string player = slot.playerNameText.text;
+            if (player != "<pusty>")
+            {
+                if (player.Equals(playerTeam.leader))
+                {
+                    playerTeam.color = slot.teamColor.color;
+                    playerTeam.nr = slot.nr;
+                    teams.Add(playerTeam);
+                }
+                else
+                {
+                    GameObject teamObject = new GameObject("Team " + player);
+                    Team team = teamObject.AddComponent<Team>();
+                    team.leader = player;
+                    team.nr = slot.nr;
+                    team.color = slot.teamColor.color;
+                    teams.Add(team);
+                }
+            }
         }
-        else
-        {
-            MessageDialog.Create().Show("BŁĄD!");
-        }
+
+        LevelLoader.Instance.LoadTestScene();
     }
 }

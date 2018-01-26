@@ -12,6 +12,11 @@ namespace TestujeSocketRAZ.model.receive
         public string result { get; set; }
         public string description { get; set; }
 
+        public string additionalInformations()
+        {
+            return "";
+        }
+
         public bool CancelConnection()
         {
             return false ;

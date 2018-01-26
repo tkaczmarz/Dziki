@@ -11,5 +11,6 @@ namespace TestujeSocketRAZ.factory
         bool isRequestSuccess();
         bool CancelConnection();
         String responseMessage();
+        String additionalInformations();
     }
 }

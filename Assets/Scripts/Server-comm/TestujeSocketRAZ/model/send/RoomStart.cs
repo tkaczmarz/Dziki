@@ -35,5 +35,10 @@ namespace TestujeSocketRAZ.model.send
         {
             return token;
         }
+
+        public string additionalInformations()
+        {
+            return "";
+        }
     }
 }

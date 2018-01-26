@@ -294,7 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64c5ef0ee6a850446b6b56581868244e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableTerrains: 040000000200000003000000
+  availableTerrains: 04000000020000000300000001000000
   maxHealth: 80
   health: 80
   team: 1

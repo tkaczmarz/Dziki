@@ -14,8 +14,9 @@ public class GameController : MonoBehaviour
     public Team ActiveTeam { get { return activeTeam; } }
     /// <summary>Array of all teams.</summary>
     public Team[] Teams { get { return teams.ToArray(); } }
-
+    public Team Player { get { return player; } }
     public GameObject selectionMarkerPrefab;
+    public Button endTurnButton;
 
     [HideInInspector]
     public SelectionMarker marker;
@@ -24,6 +25,8 @@ public class GameController : MonoBehaviour
 
     private List<Team> teams = new List<Team>();
     private Team activeTeam = null;
+    private Lobby lobby;
+    private Team player;
 
     private void Awake()
     {
@@ -42,48 +45,84 @@ public class GameController : MonoBehaviour
         if (!nextTurnPanel)
             Debug.LogWarning("No 'Next turn' panel attached!");
 
-        CreateTeams();
-        if (teams.Count <= 1)
-        {
-            Debug.LogError("There's less than 2 teams in the game!");
-        }
+        lobby = FindObjectOfType<Lobby>();
+        if (!lobby)
+            Debug.LogError("Can't find lobby gameobject!");
 
+        player = GameObject.FindWithTag("Player").GetComponent<Team>();
+
+        CreateTeams();
+        // if (teams.Count <= 1)
+        // {
+        //     Debug.LogError("There's less than 2 teams in the game!");
+        // }
+
+        activeTeam = teams[0];
         TurnBegin();
     }
 
     /// <summary>Method creates Team components based on units' team numbers.</summary>
     private void CreateTeams()
     {
-        // count teams
-        SelectableObject[] objects = FindObjectsOfType<SelectableObject>();
-        List<int> teamNrs = new List<int>();
-        foreach (SelectableObject selectable in objects)
+        Team[] t = FindObjectsOfType<Team>();
+        Team[] toAdd = new Team[t.Length];
+        if (t.Length > 1)
         {
-            if (!teamNrs.Contains(selectable.team))
+            for (int i = 0; i < t.Length; i++)
             {
-                teamNrs.Add(selectable.team);
+                toAdd[t[i].nr - 1] = t[i];
             }
+            teams = toAdd.ToList();
         }
-        teamNrs.Sort();
-
-        // create team components
-        foreach (int nr in teamNrs)
+        else
         {
-            if (nr == 0)
-                continue;
-
-            Team team = gameObject.AddComponent<Team>();
-            team.nr = nr;
-            team.color = teamColors[(nr - 1) % teamColors.Length];
-            teams.Add(team);
-
-            // assign objects to teams
-            SelectableObject[] members = objects.Select(n => n).Where(b => b.team == nr).ToArray();
-            Debug.Log("Assigning " + members.Length + " member(s) to team nr " + nr);
-            foreach (SelectableObject member in members)
+            // reactivate units
+            for (int i = 1; i <= 4; i++)
             {
-                member.AssignToTeam(team);
-                teams[nr - 1].Troops.Add(member);
+                GameObject teamObject = GameObject.Find("Team" + i);
+                if (teamObject)
+                {
+                    List<Transform> children = new List<Transform>();
+                    foreach (Transform child in teamObject.transform)
+                    {
+                        children.Add(child);
+                    }
+                    foreach (Transform tr in children)
+                        tr.gameObject.SetActive(true);
+                }
+            }
+
+            // count teams
+            SelectableObject[] objects = FindObjectsOfType<SelectableObject>();
+            List<int> teamNrs = new List<int>();
+            foreach (SelectableObject selectable in objects)
+            {
+                if (!teamNrs.Contains(selectable.team))
+                {
+                    teamNrs.Add(selectable.team);
+                }
+            }
+            teamNrs.Sort();
+
+            // create team components
+            foreach (int nr in teamNrs)
+            {
+                if (nr == 0)
+                    continue;
+
+                Team team = gameObject.AddComponent<Team>();
+                team.nr = nr;
+                team.color = teamColors[(nr - 1) % teamColors.Length];
+                teams.Add(team);
+
+                // assign objects to teams
+                SelectableObject[] members = objects.Select(n => n).Where(b => b.team == nr).ToArray();
+                Debug.Log("Assigning " + members.Length + " member(s) to team nr " + nr);
+                foreach (SelectableObject member in members)
+                {
+                    member.AssignToTeam(team);
+                    teams[nr - 1].Troops.Add(member);
+                }
             }
         }
     }
@@ -105,8 +144,22 @@ public class GameController : MonoBehaviour
         enabled = false;
     }
 
+    public void SendEndTurnRequest()
+    {
+        lobby.SendMessage("ENDOFTURN", lobby.RoomPort);
+    }
+
+    public void TurnEndedButtonPressed()
+    {
+        // assign next team
+        int nextTeamIdx = (teams.IndexOf(activeTeam) + 1) % teams.Count;
+        activeTeam = teams[nextTeamIdx];
+
+        TurnBegin();
+    }
+
     /// <summary>Initiate new turn of next team.</summary>
-    public void TurnBegin()
+    private void TurnBegin()
     {
         if (activeTeam)
         {
@@ -114,11 +167,13 @@ public class GameController : MonoBehaviour
             {
                 obj.FinishMove();
             }
+            
+            if (activeTeam.nr == player.nr)
+                endTurnButton.interactable = true;
+            else
+                endTurnButton.interactable = false;
         }
 
-        // assign next team
-        int nextTeamIdx = (teams.IndexOf(activeTeam) + 1) % teams.Count;
-        activeTeam = teams[nextTeamIdx];
         nextTurnPanel.Show(activeTeam, 1.5f);
         foreach (Team team in teams)
         {

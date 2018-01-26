@@ -12,6 +12,7 @@ namespace TestujeSocketRAZ.model.receive
         public string commType { get; set; }
         public string result { get; set; }
         public int roomPort { get; set; }
+        public string playerlist { get; set; }
         private bool cancelConnection = false;
 
         public bool CancelConnection()
@@ -27,6 +28,11 @@ namespace TestujeSocketRAZ.model.receive
         public bool isRequestSuccess()
         {
             return true;
+        }
+
+        public string additionalInformations()
+        {
+            return playerlist;
         }
     }
 }

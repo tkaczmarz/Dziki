@@ -11,10 +11,7 @@ namespace TestujeSocketRAZ.model
     {
         public string commType { get; set; }
         public string result { get; set; }
-        public int roomPort {
-            get { return roomPort; }
-            set { roomPort = Convert.ToInt32(value); }
-        }
+        public string roomPort { get; set; }
         public string token { get; set; }
         private bool cancelConnection = false;
         private bool requestSuccess = true;
@@ -30,8 +27,12 @@ namespace TestujeSocketRAZ.model
 
         public string responseMessage()
         {
+            return roomPort;
+        }
 
-            return result;
+        public string additionalInformations()
+        {
+            return "";
         }
     }
 }

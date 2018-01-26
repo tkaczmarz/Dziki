@@ -13,6 +13,11 @@ namespace TestujeSocketRAZ.model.receive
         private String message;
         private bool cancelConnection;
 
+        public string additionalInformations()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool CancelConnection()
         {
             return cancelConnection;

@@ -21,7 +21,7 @@ public class NextTurnPanel : DialogBase
     {
         gameObject.SetActive(true);
         colorBackground.color = team.color;
-        text.text = "Turn of team " + team.nr;
+        text.text = "Tura drużyny nr " + team.nr;
         action = onDisableAction;
         StopAllCoroutines();
         StartCoroutine(ActivateForTime(activeTime));

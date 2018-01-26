@@ -23,11 +23,11 @@ public class PlayerSlot : MonoBehaviour
 
     public void Occupy(Team team, PlayerSlot from)
     {
-        if (team.isAdmin)
-        {
-            playerNameText.text = team.leader + " (Admin)";
-        }
-        else
+        // if (team.isAdmin)
+        // {
+        //     playerNameText.text = team.leader + " (Admin)";
+        // }
+        // else
             playerNameText.text = team.leader;
 
         // clear previous slot
@@ -39,8 +39,8 @@ public class PlayerSlot : MonoBehaviour
         isEmpty = false;
         occupyButton.gameObject.SetActive(false);
 
-        Team localPlayer = MainMenuController.Instance.playerTeam;
-        if (localPlayer.isAdmin && localPlayer != team)
-            kickButton.gameObject.SetActive(true);
+        // Team localPlayer = MainMenuController.Instance.playerTeam;
+        // if (localPlayer.isAdmin && localPlayer != team)
+        //     kickButton.gameObject.SetActive(true);
     }
 }
