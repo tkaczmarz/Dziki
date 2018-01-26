@@ -11,6 +11,7 @@ public class Lobby : MonoBehaviour
 
     private int roomPort;
     private bool online = false;
+    UdpManager udpClient;
 
     public IEnumerator WaitForServerCommands(int port)
     {
@@ -21,7 +22,7 @@ public class Lobby : MonoBehaviour
         //laczysz sie z serwerem i sluchasz wiadomosci
         
         Debug.Log("<color=lime>START LISTENING</color>");
-        UdpManager udpClient = new UdpManager();
+        udpClient = new UdpManager();
         udpClient.Connect(port);
         while (true) 
         {
@@ -58,10 +59,9 @@ public class Lobby : MonoBehaviour
 
     public void SendMessage(string msg, int port)
     {
-        UdpManager manager = new UdpManager();
         PlayerMove req = new PlayerMove();
         req.test = msg;
-        manager.SendRequestPlayerMove(req, port);
+        udpClient.SendRequestPlayerMove(req, port);
         Debug.Log("MESSAGE SENT");
     }
 }

@@ -71,9 +71,17 @@ namespace TestujeSocketRAZ.service
             string message = JsonConvert.SerializeObject(jsonRequest);
             Console.WriteLine(message);
 
-            udpClient.Connect("localhost", serverPort);
-            Byte[] sendBytes = Encoding.ASCII.GetBytes(message);
-            udpClient.Send(sendBytes, sendBytes.Length);
+            // udpClient.Connect("localhost", serverPort);
+            try
+            {
+                Byte[] sendBytes = Encoding.ASCII.GetBytes(message);
+                udpClient.Send(sendBytes, sendBytes.Length);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Exception: " + e.StackTrace);
+            }
+            
 
             //received data
             //IPEndPoint object will allow us to read datagrams sent from any source.
@@ -150,6 +158,11 @@ namespace TestujeSocketRAZ.service
 
             // udpClient.Close();
             return data;
+        }
+
+        public void CloseConnection()
+        {
+            udpClient.Close();   
         }
 
         private void recv(IAsyncResult result)

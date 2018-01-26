@@ -74,6 +74,13 @@ public class MainMenuController : MonoBehaviour
         lobby = playerTeam.gameObject.GetComponent<Lobby>();
     }
 
+    public void LoadTestScene()
+    {
+        playerTeam.nr = 1;
+        playerTeam.color = Color.red;
+        LevelLoader.Instance.LoadTestScene();
+    }
+
     public void PlayButtonAction()
     {
         // check if given nickname is valid

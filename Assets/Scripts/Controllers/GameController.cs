@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour
     /// <summary>Array of all teams.</summary>
     public Team[] Teams { get { return teams.ToArray(); } }
     public Team Player { get { return player; } }
+    public Lobby Lobby { get { return lobby; } }
     public GameObject selectionMarkerPrefab;
     public Button endTurnButton;
 
@@ -146,7 +147,10 @@ public class GameController : MonoBehaviour
 
     public void SendEndTurnRequest()
     {
-        lobby.SendMessage("ENDOFTURN", lobby.RoomPort);
+        if (lobby.Online)
+            lobby.SendMessage("ENDOFTURN", lobby.RoomPort);
+        else
+            TurnEndedButtonPressed();
     }
 
     public void TurnEndedButtonPressed()
@@ -168,10 +172,13 @@ public class GameController : MonoBehaviour
                 obj.FinishMove();
             }
             
-            if (activeTeam.nr == player.nr)
-                endTurnButton.interactable = true;
-            else
-                endTurnButton.interactable = false;
+            if (lobby.Online)
+            {
+                if (activeTeam.nr == player.nr)
+                    endTurnButton.interactable = true;
+                else
+                    endTurnButton.interactable = false;
+            }            
         }
 
         nextTurnPanel.Show(activeTeam, 1.5f);
